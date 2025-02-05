@@ -1,5 +1,14 @@
 # SRS DOCUMENT
 
+## Team - 05
+```
+2023BCY0005 Adil Omar
+2023BCY0018 Saumya Shahi
+2023BCY0031 Bhaskar Naik
+2023BCY0044 Kandarp Jindal
+2023BCY0057 Nahil Rasheed
+```
+
 ## 1. Introduction
 
 The platform is intended to serve as a robust online hub for peer-driven project sharing and improvement. The platform will allow users to upload completed projects, receive ratings, and feedback, and explore peer submissions. Its primary objectives are to encourage constructive feedback, enhance project quality, and promote the possibility of collaborative work.
