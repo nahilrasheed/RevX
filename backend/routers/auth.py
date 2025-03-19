@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from database import supabase
-from models.user import UserCreate
+from models.user import UserCreate, UserLogin
 from services.auth_service import create_user_profile
 
 router = APIRouter()
@@ -32,5 +32,44 @@ async def register_user(user: UserCreate):
             "data": profile_data,
             "auth_token": auth_res.access_token,
         }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/login", status_code=200)
+async def login_user(user: UserLogin):
+    try:
+        auth_res = supabase.auth.sign_in_with_password({
+            "email": user.email,
+            "password": user.password
+        })
+
+        if auth_res.user is None:
+            raise HTTPException(status_code=400, detail="Invalid email or password")
+        
+        try:
+            profile = supabase.table("revx.profile").select("*").eq("id", auth_res.user.id).single().execute()
+
+            if not profile.data:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Profile not found for the user"
+                )
+            
+            profile_data = {
+                **profile.data,
+                "email": auth_res.user.email,
+            }
+
+            return {
+                "status": "success",
+                "message": "User logged in successfully",
+                "data": profile_data,
+                "auth_token": auth_res.session.access_token,
+            }
+        except Exception as profile_err:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Error fetching user profile: {str(profile_err)}"
+            )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
