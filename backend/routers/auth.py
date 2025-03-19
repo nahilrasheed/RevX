@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
 from models.user import UserCreate, UserLogin
-from services.auth_service import create_user_profile
+from services.auth_service import create_user_profile, get_user_profile
 
 router = APIRouter()
 
@@ -30,7 +30,7 @@ async def register_user(user: UserCreate):
             "status": "success",
             "message": "User registered successfully",
             "data": profile_data,
-            "auth_token": auth_res.access_token,
+            "auth_token": auth_res.session.access_token,
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -73,3 +73,19 @@ async def login_user(user: UserLogin):
             )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/logout", status_code=200)
+async def logout_user(
+        curr_user = Depends(get_user_profile)
+    ):
+    try:
+        supabase.auth.sign_out(curr_user["access_token"])
+        return {
+            "status": "success",
+            "message": "User logged out successfully"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error logging out user: {str(e)}"
+        )
