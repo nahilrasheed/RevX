@@ -27,3 +27,34 @@ async def create_project(
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error creating project")
+    
+@router.get("/list", status_code=200)
+async def list_projects():
+    try:
+        projects = supabase.schema("revx").table("projects").select("*").execute()
+        return {
+            "status": "success",
+            "data": projects.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error fetching projects")
+    
+@router.get("/get/{project_id}", status_code=200)
+async def get_project(project_id: str):
+    try:
+        project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
+        contributors = supabase.schema("revx").table("contributors").select("*").eq("project_id", project_id).execute()
+        reviews = supabase.schema("revx").table("reviews").select("*").eq("project_id", project_id).execute()
+
+        data = project.data[0]
+        data["contributors"] = contributors.data
+        data["reviews"] = reviews.data
+
+        print(data)
+
+        return {
+            "status": "success",
+            "data": data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error fetching project")
