@@ -15,7 +15,7 @@ async def verify_token(
         raise HTTPException(
             status_code=401,
             detail="Invalid or expired token",
-            headers="WWW-Authenticate: Bearer",
+            headers={"WWW-Authenticate": "Bearer"},
         )
     
 async def get_current_user(user = Depends(verify_token)):

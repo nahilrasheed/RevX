@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
 from models.user import UserCreate, UserLogin
-from services.auth_service import create_user_profile, get_user_profile
+from services.auth_service import create_user_profile
+from middleware.auth_middleware import get_current_user
 
 router = APIRouter()
 
@@ -73,19 +74,18 @@ async def login_user(user: UserLogin):
             )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 @router.post("/logout", status_code=200)
-async def logout_user(
-        curr_user = Depends(get_user_profile)
-    ):
+async def logout_user(current_user = Depends(get_current_user)):
     try:
-        supabase.auth.sign_out(curr_user["access_token"])
+        auth_res = supabase.auth.sign_out()
+
         return {
             "status": "success",
             "message": "User logged out successfully"
         }
     except Exception as e:
         raise HTTPException(
-            status_code=400,
+            status_code=500, 
             detail=f"Error logging out user: {str(e)}"
         )
