@@ -30,21 +30,3 @@ async def create_user_profile(
         return res.data[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating user profile: {str(e)}")
-    
-async def get_user_profile(authorization: str = Header(None)):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=401,
-            detail="Unauthorized"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-
-    try:
-        user = supabase.auth.get_user(token)
-        return user
-    except Exception as e:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired token"
-        )
