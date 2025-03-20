@@ -24,7 +24,7 @@ REV-X is a web-based platform that allows users to upload completed projects, re
 ## Installation & Setup
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/rev-x.git
+   git clone https://github.com/Kandarp05/RevX
    cd RevX
    ```
 2. Setup backend
