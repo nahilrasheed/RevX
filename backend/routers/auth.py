@@ -47,7 +47,7 @@ async def login_user(user: UserLogin):
             raise HTTPException(status_code=400, detail="Invalid email or password")
         
         try:
-            profile = supabase.table("revx.profile").select("*").eq("id", auth_res.user.id).single().execute()
+            profile = supabase.schema("revx").table("profile").select("*").eq("id", auth_res.user.id).single().execute()
 
             if not profile.data:
                 raise HTTPException(
