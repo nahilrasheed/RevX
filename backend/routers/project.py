@@ -68,7 +68,11 @@ async def add_contributor(
     try:
         if author.user.id == contributor.contributor_id:
             raise HTTPException(status_code=400, detail="You cannot add yourself as a contributor")
-        
+
+        author_check = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
+        if author_check.data[0]["owner_id"] != author.user.id:
+            raise HTTPException(status_code=400, detail="You are not the owner of this project")
+
         exists_check = supabase.schema("revx").table("contributors").select("*")\
             .eq("project_id", project_id)\
             .eq("user_id", contributor.contributor_id)\
