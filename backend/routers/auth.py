@@ -9,6 +9,23 @@ router = APIRouter()
 @router.post("/register", status_code=201)
 async def register_user(user: UserCreate):
     try:
+        if not user.email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        if not user.password:
+            raise HTTPException(status_code=400, detail="Password is required")
+        if not user.username:
+            raise HTTPException(status_code=400, detail="Username is required")
+        if not user.full_name:
+            raise HTTPException(status_code=400, detail="Full name is required")
+        
+        email_exist_check = supabase.schema("auth").table("user").select("email").eq("email", user.email).execute()
+        if email_exist_check.data:
+            raise HTTPException(status_code=400, detail="User with this email already exists")
+        
+        username_exist_check = supabase.schema("revx").table("profile").select("username").eq("username", user.username).execute()
+        if username_exist_check.data:
+            raise HTTPException(status_code=400, detail="User with this username already exists")
+
         auth_res = supabase.auth.sign_up({
             "email": user.email,
             "password": user.password
@@ -33,6 +50,8 @@ async def register_user(user: UserCreate):
             "data": profile_data,
             "auth_token": auth_res.session.access_token,
         }
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
