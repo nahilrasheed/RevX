@@ -37,7 +37,19 @@ async def create_project(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error creating project")
-    
+
+@router.get("/my_projects", status_code=200)
+async def my_projects(user = Depends(get_current_user)):
+    try:
+        user_id = str(user.user.id)
+        projects = supabase.schema("revx").table("projects").select("*").eq("owner_id", user_id).execute()
+        return {
+            "status": "success",
+            "data": projects.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error fetching projects")
+
 @router.get("/list", status_code=200)
 async def list_projects():
     try:
@@ -48,7 +60,7 @@ async def list_projects():
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error fetching projects")
-    
+
 @router.get("/get/{project_id}", status_code=200)
 async def get_project(project_id: str):
     try:
@@ -71,7 +83,7 @@ async def get_project(project_id: str):
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error fetching project")
-    
+
 @router.post("/add_contributor/{project_id}", status_code=201)
 async def add_contributor(
     project_id: str,
@@ -108,7 +120,7 @@ async def add_contributor(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error adding contributor")
-    
+
 @router.post("/add_review/{project_id}", status_code=201)
 async def add_review(
     project_id: str,
@@ -116,6 +128,13 @@ async def add_review(
     user = Depends(get_current_user)
 ):  
     try: 
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
+        if not Review.rating:
+            raise HTTPException(status_code=400, detail="Rating is required")
+        if not Review.review:
+            raise HTTPException(status_code=400, detail="Review is required")
+
         project_author = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
         if project_author.data[0]["owner_id"] == user.user.id:
             raise HTTPException(status_code=400, detail="You cannot review your own project")
