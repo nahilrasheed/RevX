@@ -57,7 +57,7 @@ const LoginPage = () => {
           Sign In
         </button>
         <div className="mt-4 text-sm">
-          <a href="/forgotpassword" className="text-blue-500 hover:underline">
+          <a href="/forgetpassword" className="text-blue-500 hover:underline">
             Forgot password?
           </a>
         </div>

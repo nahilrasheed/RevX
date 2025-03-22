@@ -1,7 +1,6 @@
 const Hero = () => {
   return (
     <div>
-      {/* Hero Section */}
       <section className="py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
           Welcome to REV-X
