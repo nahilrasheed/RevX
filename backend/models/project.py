@@ -18,3 +18,11 @@ class ProjectResponse(Project):
     id: str
     owner_id: str
     created_at: str
+
+class Contributor(BaseModel):
+    project_id: str
+    user_id: str
+    status: str
+
+class ContributorCreate(BaseModel):
+    contributor_id: str

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
-from models.project import ProjectCreate
+from models.project import ProjectCreate, ContributorCreate
 from middleware.auth_middleware import get_current_user
-from services.project_service import create_project_service
+from services.project_service import create_project_service, add_contributor_service
 
 router = APIRouter()
 
@@ -58,3 +58,32 @@ async def get_project(project_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error fetching project")
+    
+@router.post("/add_contributor/{project_id}", status_code=201)
+async def add_contributor(
+    project_id: str,
+    contributor: ContributorCreate,
+    author = Depends(get_current_user)
+):
+    try:
+        if author.user.id == contributor.contributor_id:
+            raise HTTPException(status_code=400, detail="You cannot add yourself as a contributor")
+        
+        exists_check = supabase.schema("revx").table("contributors").select("*")\
+            .eq("project_id", project_id)\
+            .eq("user_id", contributor.contributor_id)\
+            .execute()
+        
+        if exists_check.data:
+            raise HTTPException(status_code=400, detail="Contributor already exists")
+        
+        contributor_data = await add_contributor_service(project_id, contributor.contributor_id)
+        return {
+            "status": "success",
+            "message": "Contributor added successfully",
+            "data": contributor_data
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error adding contributor")
