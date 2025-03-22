@@ -58,6 +58,11 @@ async def register_user(user: UserCreate):
 @router.post("/login", status_code=200)
 async def login_user(user: UserLogin):
     try:
+        if not user.email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        if not user.password:
+            raise HTTPException(status_code=400, detail="Password is required")
+
         auth_res = supabase.auth.sign_in_with_password({
             "email": user.email,
             "password": user.password
@@ -91,6 +96,8 @@ async def login_user(user: UserLogin):
                 status_code=400,
                 detail=f"Error fetching user profile: {str(profile_err)}"
             )
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
