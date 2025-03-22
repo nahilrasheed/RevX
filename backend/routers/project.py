@@ -52,6 +52,9 @@ async def list_projects():
 @router.get("/get/{project_id}", status_code=200)
 async def get_project(project_id: str):
     try:
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
+
         project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
         contributors = supabase.schema("revx").table("contributors").select("*").eq("project_id", project_id).execute()
         reviews = supabase.schema("revx").table("reviews").select("*").eq("project_id", project_id).execute()
@@ -60,12 +63,12 @@ async def get_project(project_id: str):
         data["contributors"] = contributors.data
         data["reviews"] = reviews.data
 
-        print(data)
-
         return {
             "status": "success",
             "data": data
         }
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error fetching project")
     
@@ -76,6 +79,10 @@ async def add_contributor(
     author = Depends(get_current_user)
 ):
     try:
+        if not contributor.contributor_id:
+            raise HTTPException(status_code=400, detail="Contributor ID is required")
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
         if author.user.id == contributor.contributor_id:
             raise HTTPException(status_code=400, detail="You cannot add yourself as a contributor")
 
