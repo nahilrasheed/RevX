@@ -13,6 +13,14 @@ async def create_project(
 ):
     try:
         user_id = str(user.user.id)
+
+        if not project.title:
+            raise HTTPException(status_code=400, detail="Project title is required")
+
+        exist_check = supabase.schema("revx").table("projects").select("*").eq("title", project.title).execute()
+        if exist_check.data:
+            raise HTTPException(status_code=400, detail="Project with this title already exists")
+        
         project_data = await create_project_service(
             project.title,
             project.description,
@@ -25,6 +33,8 @@ async def create_project(
             "message": "Project created successfully",
             "data": project_data
         }
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error creating project")
     
