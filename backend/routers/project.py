@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
-from models.project import ProjectCreate, ContributorCreate
+from models.project import ProjectCreate, ContributorCreate, ReviewCreate
 from middleware.auth_middleware import get_current_user
-from services.project_service import create_project_service, add_contributor_service
+from services.project_service import create_project_service, add_contributor_service, add_review_service
 
 router = APIRouter()
 
@@ -87,3 +87,38 @@ async def add_contributor(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error adding contributor")
+    
+@router.post("/add_review/{project_id}", status_code=201)
+async def add_review(
+    project_id: str,
+    Review: ReviewCreate,
+    user = Depends(get_current_user)
+):  
+    try: 
+        project_author = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
+        if project_author.data[0]["owner_id"] == user.user.id:
+            raise HTTPException(status_code=400, detail="You cannot review your own project")
+        
+        exists_check = supabase.schema("revx").table("reviews").select("*")\
+            .eq("project_id", project_id)\
+            .eq("user_id", user.user.id)\
+            .execute()
+        if exists_check.data:
+            raise HTTPException(status_code=400, detail="User can only review a project once")
+        
+        review_data = await add_review_service(
+            project_id,
+            user.user.id,
+            Review.review,
+            Review.rating
+        )
+
+        return {
+            "status": "success",
+            "message": "Review added successfully",
+            "data": review_data
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error adding review")
