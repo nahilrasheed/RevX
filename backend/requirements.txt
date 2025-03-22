@@ -1,6 +1,19 @@
-email-validator==2.2.0
-fastapi==0.110.0
-uvicorn==0.28.0
-supabase==2.3.5
-python-dotenv==1.0.1
-pydantic==2.7.0
+# Core API dependencies
+fastapi==0.103.1  # Last version with reliable pre-built wheels
+uvicorn[standard]==0.23.2
+
+# Use binary-compatible pydantic
+pydantic==1.10.12  
+
+# Database and authentication
+supabase==1.0.3
+python-dotenv==1.0.0
+
+# Validation and utilities
+email-validator==2.0.0
+python-multipart==0.0.6
+httpx==0.23.0
+
+# Runtime dependencies
+typing-extensions==4.7.1
+starlette==0.27.0
