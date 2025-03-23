@@ -1,16 +1,16 @@
-import { Code2 } from 'lucide-react';
+import { Code2, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const NavBar = () => {
-  // Simulating user authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [username, setUsername] = useState('Saumya');
+  const { isAuthenticated, user, logout } = useAuth();
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUsername('');
-    // Add logout logic (e.g., clear token, redirect)
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -19,23 +19,32 @@ const NavBar = () => {
       <Link to="/" className="text-xl font-bold" aria-label="Home">
         <div className="flex items-center space-x-2">
           <Code2 className="h-8 w-8 text-white" />
+          <span>REV-X</span>
         </div>
       </Link>
 
       {/* Navigation Links */}
       <div className="flex gap-6">
-        <Link to="/about" aria-label="About">About</Link>
+        {isAuthenticated && (
+          <Link to="/home" aria-label="Home">Home</Link>
+        )}
         <Link to="/explore" aria-label="Explore">Explore</Link>
-        <Link to="/community" aria-label="Community">Community</Link>
-        <Link to="/profile" aria-label="Profile">Profile</Link>
-        <Link to="/contact" aria-label="Contact">Contact</Link>
+        {isAuthenticated && (
+          <Link to="/dashboard" aria-label="Dashboard">Dashboard</Link>
+        )}
+        <Link to="/about" aria-label="About">About</Link>
       </div>
 
       {/* Authentication Actions */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center">
         {isAuthenticated ? (
           <>
-            <span className="p-2 rounded-lg bg-gray-800">{`Logged in as ${username}`}</span>
+            <Link to="/profile" className="flex items-center gap-2" aria-label="Profile">
+              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                <User className="h-4 w-4" />
+              </div>
+              <span className="hidden md:inline">{user?.username || 'User'}</span>
+            </Link>
             <button
               onClick={handleLogout}
               className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600"

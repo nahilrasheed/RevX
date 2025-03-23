@@ -1,18 +1,63 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Menu, X } from 'lucide-react';
-import { projects } from './Projects';
 import { categories } from './Categories';
+import { getProjects } from '../api/projects';
 
 const ProjectGrid = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await getProjects();
+        if (response.status === 'success') {
+          setProjects(response.data);
+        } else {
+          setError('Failed to load projects');
+        }
+      } catch (err: any) {
+        setError(err.response?.data?.detail || 'Error loading projects');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   // Filter logic: Show all if no category selected
   const filteredProjects = selectedCategory
     ? projects.filter((project) => project.category === selectedCategory)
     : projects;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
+        <p>{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-4 px-4 py-2 bg-white text-black rounded-lg"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -69,7 +114,7 @@ const ProjectGrid = () => {
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                   <p className="text-gray-400">{project.description}</p>
                   <span className="inline-block mt-4 text-sm bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
-                    {project.category}
+                    {project.category || 'Uncategorized'}
                   </span>
                 </div>
               </div>
