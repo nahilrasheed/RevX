@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
-from models.project import ProjectCreate, ContributorCreate, ReviewCreate
+from models.project import ProjectCreate, ContributorCreate, ReviewCreate, ProjectUpdate
 from middleware.auth_middleware import get_current_user
 from services.project_service import create_project_service, add_contributor_service, add_review_service
 
@@ -49,6 +49,44 @@ async def my_projects(user = Depends(get_current_user)):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error fetching projects")
+
+@router.put("/update/{project_id}", status_code=200)
+async def update_project(
+    Project: ProjectUpdate,
+    project_id: str,
+    user = Depends(get_current_user)
+):
+    try:
+        user_id = str(user.user.id)
+
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
+        if not Project.title:
+            raise HTTPException(status_code=400, detail="Project title cannot be empty")
+
+        project_author = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
+        if project_author.data[0]["owner_id"] != user_id:
+            raise HTTPException(status_code=400, detail="You are not the owner of this project")
+        
+        exist_check = supabase.schema("revx").table("projects").select("*").eq("title", Project.title).execute()
+        if exist_check.data:
+            raise HTTPException(status_code=400, detail="Project with this title already exists")
+
+        update_data = supabase.schema("revx").table("projects").update({
+            "title": Project.title,
+            "description": Project.description,
+            "image": Project.image
+        }).eq("id", project_id).execute()
+
+        return {
+            "status": "success",
+            "message": "Project updated successfully",
+            "data": update_data.data
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error updating project")
 
 @router.get("/list", status_code=200)
 async def list_projects():
