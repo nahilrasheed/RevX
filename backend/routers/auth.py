@@ -34,22 +34,29 @@ async def register_user(user: UserCreate):
         if auth_res.user is None:
             raise HTTPException(status_code=400, detail="Registration failed")
         
-        profile = await create_user_profile(
-            auth_res.user.id,
-            user.username,
-            user.full_name,
-            user.bio,
-            user.avatar
-        )
+        try:
+            profile = await create_user_profile(
+                auth_res.user.id,
+                user.username,
+                user.full_name,
+                user.bio,
+                user.avatar
+            )
 
-        profile_data = {**profile, "email": user.email}
+            profile_data = {**profile, "email": user.email}
 
-        return {
-            "status": "success",
-            "message": "User registered successfully",
-            "data": profile_data,
-            "auth_token": auth_res.session.access_token,
-        }
+            return {
+                "status": "success",
+                "message": "User registered successfully",
+                "data": profile_data,
+                "auth_token": auth_res.session.access_token,
+            }
+        except Exception as profile_err:
+            supabase.auth.admin.delete_user(auth_res.user.id)
+            raise HTTPException(
+                status_code=400,
+                detail=f"Error creating user profile: {str(profile_err)}"
+            )
     except HTTPException as e:
         raise e
     except Exception as e:
