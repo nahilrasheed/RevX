@@ -158,6 +158,35 @@ async def add_contributor(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error adding contributor")
+    
+@router.delete("/remove_contributor/{project_id}/{contributor_id}", status_code=200)
+async def remove_contributor(
+    project_id: str,
+    contributor_id: str,
+    user = Depends(get_current_user)
+):
+    try:
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
+        if not contributor_id:
+            raise HTTPException(status_code=400, detail="Contributor ID is required")
+        
+        author_check = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
+        if author_check.data[0]["owner_id"] != user.user.id:
+            raise HTTPException(status_code=400, detail="You are not the owner of this project")
+        
+        delete_data = supabase.schema("revx").table("contributors").delete().eq("project_id", project_id).eq("user_id", contributor_id).execute()
+
+        return {
+            "status": "success",
+            "message": "Contributor removed successfully",
+            "data": delete_data.data
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error removing contributor"
+)
 
 @router.post("/add_review/{project_id}", status_code=201)
 async def add_review(
