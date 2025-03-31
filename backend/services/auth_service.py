@@ -1,4 +1,5 @@
-from fastapi import HTTPException, Header
+from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
 from database import supabase
 from typing import Dict, Any
 
@@ -9,9 +10,9 @@ async def create_user_profile(
         bio: str = None,
         avatar: str = None,
     ) -> Dict[str, Any]:
+    
 
-    try:    
-        print("user_id", user_id)
+    try:
         profile_data = {
             "id": user_id,
             "username": username,
@@ -19,8 +20,6 @@ async def create_user_profile(
             "bio": bio,
             "avatar": avatar,
         }
-
-        print("profile_data", profile_data)
 
         res = supabase.schema("revx").table("profile").insert(profile_data).execute()
 

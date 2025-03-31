@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, project
+from routers import auth, project, user
 
 app = FastAPI(title="RevX API")
 
@@ -14,6 +14,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix='/auth', tags=['Authentication'])
 app.include_router(project.router, prefix='/project', tags=['Project'])
+app.include_router(project.router, prefix='/user', tags=['User'])
 
 @app.get("/")
 async def root():

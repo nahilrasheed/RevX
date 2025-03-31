@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from fastapi import UploadFile, File
 
 class User(BaseModel):
     email: EmailStr
@@ -21,8 +22,9 @@ class UserProfile(User):
     bio: Optional[str] = None
     avatar: Optional[str] = None
 
-class UserProfileUpdate(User):
+class UserProfileUpdate(BaseModel):
     username: Optional[str] = None
+    email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     bio: Optional[str] = None
     avatar: Optional[str] = None

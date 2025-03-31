@@ -3,6 +3,7 @@ from database import supabase
 from models.user import UserCreate, UserLogin
 from services.auth_service import create_user_profile
 from middleware.auth_middleware import get_current_user
+import base64
 
 router = APIRouter()
 
@@ -17,11 +18,7 @@ async def register_user(user: UserCreate):
             raise HTTPException(status_code=400, detail="Username is required")
         if not user.full_name:
             raise HTTPException(status_code=400, detail="Full name is required")
-        
-        email_exist_check = supabase.schema("auth").table("user").select("email").eq("email", user.email).execute()
-        if email_exist_check.data:
-            raise HTTPException(status_code=400, detail="User with this email already exists")
-        
+
         username_exist_check = supabase.schema("revx").table("profile").select("username").eq("username", user.username).execute()
         if username_exist_check.data:
             raise HTTPException(status_code=400, detail="User with this username already exists")
@@ -35,12 +32,17 @@ async def register_user(user: UserCreate):
             raise HTTPException(status_code=400, detail="Registration failed")
         
         try:
+            if user.avatar:
+                avatar_data = base64.b64decode(user.avatar)
+            else:
+                avatar_data = None
+
             profile = await create_user_profile(
                 auth_res.user.id,
                 user.username,
                 user.full_name,
                 user.bio,
-                user.avatar
+                avatar_data
             )
 
             profile_data = {**profile, "email": user.email}
