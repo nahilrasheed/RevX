@@ -28,4 +28,5 @@ class UserProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     bio: Optional[str] = None
     avatar: Optional[str] = None
+    password: Optional[str] = None
 

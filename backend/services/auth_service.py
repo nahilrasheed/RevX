@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 from database import supabase
 from typing import Dict, Any
 
@@ -11,7 +10,6 @@ async def create_user_profile(
         avatar: str = None,
     ) -> Dict[str, Any]:
     
-
     try:
         profile_data = {
             "id": user_id,

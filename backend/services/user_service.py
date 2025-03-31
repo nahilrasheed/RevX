@@ -20,8 +20,8 @@ async def update_user_service(
         profile_updates = {}
 
         if username is not None:
-            usernmae_check = supabase.schema("revx").table("profile").select("id").eq("username", username).execute()
-            if usernmae_check.data:
+            username_check = supabase.schema("revx").table("profile").select("id").eq("username", username).execute()
+            if username_check.data:
                 raise HTTPException(status_code=400, detail="Username already taken")
             
             profile_updates["username"] = username
@@ -32,6 +32,26 @@ async def update_user_service(
         if bio is not None:
             profile_updates["bio"] = bio
 
+        if avatar is not None:
+            profile_updates["avatar"] = avatar
+
+        if profile_updates:
+            supabase.schema("revx").table("profile").update(profile_updates).eq("id", user_id).execute()
+
+        auth_update = {}   
+        if email is not None:
+            auth_update["email"] = email
+        if password is not None:
+            auth_update["password"] = password
+        if auth_update:
+            supabase.auth.update_user(auth_update)
+
+        updated_profile = supabase.schema("revx").table("profile").select("*").eq("id", user_id).execute()
+
+        if not updated_profile.data:
+            raise HTTPException(status_code=404, detail="User not found after update")
+        
+        return updated_profile.data[0]
     except HTTPException as e:
         raise e
     except Exception as e:
