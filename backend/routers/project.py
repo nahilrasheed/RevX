@@ -106,12 +106,53 @@ async def get_project(project_id: str):
             raise HTTPException(status_code=400, detail="Project ID is required")
 
         project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
-        contributors = supabase.schema("revx").table("contributors").select("*").eq("project_id", project_id).execute()
-        reviews = supabase.schema("revx").table("reviews").select("*").eq("project_id", project_id).execute()
+        if not project.data:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        owner_id = project.data[0]["owner_id"]
+        owner_info = supabase.schema("revx").table("profile").select("*").eq("id", owner_id).execute()
+        
+        contributors_result = supabase.schema("revx").table("contributors").select("*").eq("project_id", project_id).execute()
+        
+        contributors_with_profiles = []
+        if contributors_result.data:
+            for contributor in contributors_result.data:
+                user_id = contributor["user_id"]
+                profile = supabase.schema("revx").table("profile").select("username,avatar,full_name").eq("id", user_id).execute()
+                
+                if profile.data:
+                    contributor_data = {
+                        **contributor,
+                        "username": profile.data[0]["username"],
+                        "avatar": profile.data[0]["avatar"],
+                        "full_name": profile.data[0]["full_name"]
+                    }
+                    contributors_with_profiles.append(contributor_data)
+        
+        reviews_result = supabase.schema("revx").table("reviews").select("*").eq("project_id", project_id).execute()
+        
+        reviews_with_profiles = []
+        if reviews_result.data:
+            for review in reviews_result.data:
+                user_id = review["user_id"]
+                profile = supabase.schema("revx").table("profile").select("username,avatar,full_name").eq("id", user_id).execute()
+                
+                if profile.data:
+                    review_data = {
+                        **review,
+                        "username": profile.data[0]["username"],
+                        "avatar": profile.data[0]["avatar"],
+                        "full_name": profile.data[0]["full_name"]
+                    }
+                    reviews_with_profiles.append(review_data)
+        
+        images = supabase.schema("revx").table("project_images").select("*").eq("project_id", project_id).execute()
 
         data = project.data[0]
-        data["contributors"] = contributors.data
-        data["reviews"] = reviews.data
+        data["owner"] = owner_info.data[0] if owner_info.data else None
+        data["contributors"] = contributors_with_profiles
+        data["reviews"] = reviews_with_profiles
+        data["images"] = [img["image_link"] for img in images.data] if images.data else []
 
         return {
             "status": "success",
@@ -120,7 +161,10 @@ async def get_project(project_id: str):
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Error fetching project")
+        import traceback
+        print(f"Error fetching project: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=400, detail=f"Error fetching project: {str(e)}")
 
 @router.post("/add_contributor/{project_id}", status_code=201)
 async def add_contributor(
