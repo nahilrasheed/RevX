@@ -29,3 +29,6 @@ class UserProfileUpdate(BaseModel):
     bio: Optional[str] = None
     avatar: Optional[str] = None
 
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
