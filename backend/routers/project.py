@@ -129,26 +129,30 @@ async def add_contributor(
     author = Depends(get_current_user)
 ):
     try:
-        if not contributor.contributor_id:
-            raise HTTPException(status_code=400, detail="Contributor ID is required")
+        if not contributor.username:
+            raise HTTPException(status_code=400, detail="Username is required")
         if not project_id:
             raise HTTPException(status_code=400, detail="Project ID is required")
-        if author.user.id == contributor.contributor_id:
+        
+        contributor_check = supabase.schema("revx").table("profile").select("*").eq("username", contributor.username).execute()
+
+        if not contributor_check.data:
+            raise HTTPException(status_code=400, detail="User not found")
+        if contributor_check.data[0]["id"] == author.user.id:
             raise HTTPException(status_code=400, detail="You cannot add yourself as a contributor")
 
         author_check = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
         if author_check.data[0]["owner_id"] != author.user.id:
             raise HTTPException(status_code=400, detail="You are not the owner of this project")
-
+        
         exists_check = supabase.schema("revx").table("contributors").select("*")\
             .eq("project_id", project_id)\
-            .eq("user_id", contributor.contributor_id)\
+            .eq("user_id", contributor_check.data[0]["id"])\
             .execute()
-        
         if exists_check.data:
             raise HTTPException(status_code=400, detail="Contributor already exists")
         
-        contributor_data = await add_contributor_service(project_id, contributor.contributor_id)
+        contributor_data = await add_contributor_service(project_id, contributor_check.data[0]["id"])
         return {
             "status": "success",
             "message": "Contributor added successfully",
@@ -175,7 +179,7 @@ async def remove_contributor(
         if author_check.data[0]["owner_id"] != user.user.id:
             raise HTTPException(status_code=400, detail="You are not the owner of this project")
         
-        delete_data = supabase.schema("revx").table("contributors").delete().eq("project_id", project_id).eq("user_id", contributor_id).execute()
+        delete_data = supabase.schema("revx").table("contributors").delete().eq("project_id", project_id).eq("id", contributor_id).execute()
 
         return {
             "status": "success",

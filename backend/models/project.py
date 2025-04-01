@@ -20,7 +20,7 @@ class ProjectResponse(Project):
     created_at: str
 
 class ContributorCreate(BaseModel):
-    contributor_id: str
+    username: str
 
 class ReviewCreate(BaseModel):
     review: str
