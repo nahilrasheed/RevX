@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getProjects } from '../api/projects';
+import { getProjects, getMyProjects } from '../api/projects';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -15,18 +15,18 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await getProjects();
-        if (response.status === 'success') {
-          // Store all projects
-          setProjects(response.data);
-          
-          // Filter for user's projects only
-          if (user) {
-            const filtered = response.data.filter((project: any) => 
-              project.owner_id === user.id
-            );
-            setUserProjects(filtered);
-          }
+        // Get user's projects using the dedicated endpoint
+        const myProjectsResponse = await getMyProjects();
+        if (myProjectsResponse.status === 'success') {
+          setUserProjects(myProjectsResponse.data);
+        } else {
+          setError('Failed to fetch your projects');
+        }
+        
+        // Get all projects for the activity feed
+        const allProjectsResponse = await getProjects();
+        if (allProjectsResponse.status === 'success') {
+          setProjects(allProjectsResponse.data);
         } else {
           setError('Failed to fetch projects');
         }
