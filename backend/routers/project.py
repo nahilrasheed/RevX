@@ -52,7 +52,7 @@ async def my_projects(user = Depends(get_current_user)):
 
 @router.put("/update/{project_id}", status_code=200)
 async def update_project(
-    Project: ProjectUpdate,
+    project: ProjectUpdate,
     project_id: str,
     user = Depends(get_current_user)
 ):
@@ -61,32 +61,70 @@ async def update_project(
 
         if not project_id:
             raise HTTPException(status_code=400, detail="Project ID is required")
-        if not Project.title:
-            raise HTTPException(status_code=400, detail="Project title cannot be empty")
 
-        project_author = supabase.schema("revx").table("projects").select("owner_id").eq("id", project_id).execute()
-        if project_author.data[0]["owner_id"] != user_id:
-            raise HTTPException(status_code=400, detail="You are not the owner of this project")
+        # Check if project exists and user is the owner
+        project_check = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
+        if not project_check.data:
+            raise HTTPException(status_code=404, detail="Project not found")
+            
+        if project_check.data[0]["owner_id"] != user_id:
+            raise HTTPException(status_code=403, detail="You are not the owner of this project")
         
-        exist_check = supabase.schema("revx").table("projects").select("*").eq("title", Project.title).execute()
-        if exist_check.data:
-            raise HTTPException(status_code=400, detail="Project with this title already exists")
+        # Create an updates dictionary with only provided fields
+        updates = {}
+        
+        if project.title is not None:
+            # Check if the new title already exists (but exclude this project)
+            title_check = supabase.schema("revx").table("projects").select("id").eq("title", project.title).execute()
+            if title_check.data and title_check.data[0]["id"] != project_id:
+                raise HTTPException(status_code=400, detail="Project with this title already exists")
+            updates["title"] = project.title
+            
+        if project.description is not None:
+            updates["description"] = project.description
 
-        update_data = supabase.schema("revx").table("projects").update({
-            "title": Project.title,
-            "description": Project.description,
-            "image": Project.image
-        }).eq("id", project_id).execute()
+        # Only update if there are changes
+        if updates:
+            update_result = supabase.schema("revx").table("projects").update(updates).eq("id", project_id).execute()
+            if not update_result.data:
+                raise HTTPException(status_code=500, detail="Failed to update project")
+
+        # Handle image updates if provided
+        if project.images is not None:
+            # First, delete existing images
+            supabase.schema("revx").table("project_images").delete().eq("project_id", project_id).execute()
+            
+            # Then add new images if there are any
+            if project.images:
+                image_data_list = []
+                for image in project.images:
+                    image_data_list.append({
+                        "project_id": project_id,
+                        "image_link": image,
+                    })
+                
+                if image_data_list:
+                    image_result = supabase.schema("revx").table("project_images").insert(image_data_list).execute()
+                    if not image_result.data:
+                        raise HTTPException(status_code=500, detail="Failed to update project images")
+
+        # Get the updated project with images
+        updated_project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
+        images = supabase.schema("revx").table("project_images").select("*").eq("project_id", project_id).execute()
+        
+        # Combine project data with images
+        project_data = updated_project.data[0]
+        project_data["images"] = [img["image_link"] for img in images.data] if images.data else []
 
         return {
             "status": "success",
             "message": "Project updated successfully",
-            "data": update_data.data
+            "data": project_data
         }
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Error updating project")
+        raise HTTPException(status_code=500, detail=f"Error updating project: {str(e)}")
 
 @router.get("/list", status_code=200)
 async def list_projects():

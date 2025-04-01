@@ -5,7 +5,7 @@ from services.user_service import update_user_service
 
 router = APIRouter()
 
-@router.post("/update", status_code=200)
+@router.put("/update", status_code=200)
 async def update_user(
     user: UserProfileUpdate,
     current_user = Depends(get_current_user),

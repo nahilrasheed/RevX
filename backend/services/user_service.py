@@ -51,6 +51,7 @@ async def update_user_service(
         if not updated_profile.data:
             raise HTTPException(status_code=404, detail="User not found after update")
         
+        updated_profile.data[0]["email"] = email
         return updated_profile.data[0]
     except HTTPException as e:
         raise e
