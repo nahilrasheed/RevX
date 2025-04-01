@@ -1,10 +1,10 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class Project(BaseModel):
     title: str
     description: str
-    image: Optional[str] = None
+    images: Optional[List[str]] = None
 
 class ProjectCreate(Project):
     pass
@@ -12,7 +12,7 @@ class ProjectCreate(Project):
 class ProjectUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    image: Optional[str] = None
+    images: Optional[List[str]] = None
 
 class ProjectResponse(Project):
     id: str

@@ -25,7 +25,7 @@ async def create_project(
             project.title,
             project.description,
             user_id,
-            project.image
+            project.images
         )
 
         return {
