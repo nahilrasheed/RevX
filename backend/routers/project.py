@@ -315,3 +315,34 @@ async def add_review(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error adding review")
+    
+@router.delete("/remove_review/{review_id}", status_code=200)
+async def remove_review(
+    review_id: str,
+    user = Depends(get_current_user)
+):
+    try:
+        if not review_id:
+            raise HTTPException(status_code=400, detail="Review ID is required")
+        
+        # Check if review exists
+        review_check = supabase.schema("revx").table("reviews").select("*").eq("id", review_id).execute()
+        if not review_check.data:
+            raise HTTPException(status_code=404, detail="Review not found")
+            
+        # Verify the user owns this review - only allow users to delete their own reviews
+        if review_check.data[0]["user_id"] != user.user.id:
+            raise HTTPException(status_code=403, detail="You can only delete your own reviews")
+        
+        # Delete the review
+        delete_data = supabase.schema("revx").table("reviews").delete().eq("id", review_id).execute()
+
+        return {
+            "status": "success",
+            "message": "Review removed successfully",
+            "data": delete_data.data
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error removing review: {str(e)}")
