@@ -7,6 +7,13 @@ export interface ProjectData {
   image?: string;
 }
 
+export interface ProjectUpdateData {
+  title?: string;
+  description?: string;
+  category?: string;
+  image?: string;
+}
+
 export interface ReviewData {
   review: string;
   rating: string;
@@ -36,5 +43,20 @@ export const addContributor = async (projectId: string, contributorId: string) =
   const response = await apiClient.post(`/project/add_contributor/${projectId}`, {
     contributor_id: contributorId
   });
+  return response.data;
+};
+
+export const updateProject = async (projectId: string, projectData: ProjectUpdateData) => {
+  const response = await apiClient.put(`/project/update/${projectId}`, projectData);
+  return response.data;
+};
+
+export const removeContributor = async (projectId: string, contributorId: string) => {
+  const response = await apiClient.delete(`/project/remove_contributor/${projectId}/${contributorId}`);
+  return response.data;
+};
+
+export const getMyProjects = async () => {
+  const response = await apiClient.get('/project/my_projects');
   return response.data;
 };
