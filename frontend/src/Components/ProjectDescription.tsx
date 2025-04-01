@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProject, addReview } from '../api/projects';
 import { useAuth } from '../context/AuthContext';
-import { Star } from 'lucide-react';
+import { Star, User } from 'lucide-react';
+import ProjectEditForm from './ProjectEditForm';
+import ContributorsList from './ContributorsList';
 
 const ProjectDescription = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -178,6 +180,49 @@ const ProjectDescription = () => {
             </div>
           </div>
         </div>
+        )}
+        
+        {/* Contributors Section - Always visible */}
+        {!isEditing && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Project Contributors</h2>
+            {isOwner ? (
+              <ContributorsList 
+                projectId={projectId!}
+                contributors={project.contributors || []}
+                isOwner={isOwner}
+                onContributorRemoved={handleContributorRemoved}
+              />
+            ) : (
+              <div>
+                {project.contributors && project.contributors.length > 0 ? (
+                  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {project.contributors.map((contributor: any) => (
+                      <li 
+                        key={contributor.user_id}
+                        className="flex items-center bg-gray-800 p-3 rounded-lg"
+                      >
+                        <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                          <User className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {contributor.full_name || `User ${contributor.user_id.substring(0, 8)}`}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {contributor.username ? `@${contributor.username}` : 'No username'}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400 mb-8">No contributors for this project.</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Reviews Section */}
         <div className="mt-12">
