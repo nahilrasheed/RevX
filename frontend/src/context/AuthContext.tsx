@@ -92,10 +92,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      await apiLogout();
-    } catch (err) {
-      console.error('Logout error:', err);
+      // Try to logout via API, but don't wait for success
+      // This prevents the 401 error from blocking the logout process
+      apiLogout().catch(err => {
+        console.warn('Server logout failed, cleaning up locally:', err);
+      });
     } finally {
+      // Always clear local storage and state regardless of server response
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       setUser(null);

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
-from models.user import UserCreate, UserLogin
-from services.auth_service import create_user_profile
+from models.user import UserCreate, UserLogin, PasswordChangeRequest
+from services.auth_service import create_user_profile, change_password_service
 from middleware.auth_middleware import get_current_user
 
 router = APIRouter()
@@ -118,3 +118,26 @@ async def logout_user(current_user = Depends(get_current_user)):
             status_code=500, 
             detail=f"Error logging out user: {str(e)}"
         )
+
+@router.post("/change-password", status_code=200)
+async def change_password(
+    password_data: PasswordChangeRequest,
+    user = Depends(get_current_user)
+):
+    try:
+        success = await change_password_service(
+            user_id=user.user.id,
+            email=user.user.email,
+            current_password=password_data.current_password,
+            new_password=password_data.new_password
+        )
+        
+        return {
+            "status": "success",
+            "message": "Password changed successfully"
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    

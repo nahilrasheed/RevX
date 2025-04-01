@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProject, addReview } from '../api/projects';
 import { useAuth } from '../context/AuthContext';
-import { Star } from 'lucide-react';
+import { Star, User } from 'lucide-react';
+import ProjectEditForm from './ProjectEditForm';
+import ContributorsList from './ContributorsList';
 
 const ProjectDescription = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -18,6 +20,7 @@ const ProjectDescription = () => {
   const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -39,6 +42,21 @@ const ProjectDescription = () => {
 
     fetchProject();
   }, [projectId]);
+
+  const refreshProjectData = async () => {
+    try {
+      const updatedProject = await getProject(projectId!);
+      if (updatedProject.status === 'success') {
+        setProject(updatedProject.data);
+      }
+    } catch (err) {
+      setError('Error refreshing project data');
+    }
+  };
+
+  const handleContributorRemoved = async () => {
+    refreshProjectData();
+  };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,11 +94,7 @@ const ProjectDescription = () => {
         setRating(null);
         setHoveredRating(null);
         
-        // Refresh project data to show the new review
-        const updatedProject = await getProject(projectId!);
-        if (updatedProject.status === 'success') {
-          setProject(updatedProject.data);
-        }
+        refreshProjectData();
       } else {
         setReviewError('Failed to submit review');
       }
@@ -132,55 +146,126 @@ const ProjectDescription = () => {
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-6 py-12">
         {/* Project Header */}
-        <div className="flex flex-col lg:flex-row gap-12">
-          <div className="w-full lg:w-1/2">
-            <div className="aspect-video bg-gray-700 rounded-lg"></div>
-          </div>
+        {isEditing ? (
+          <div className="mb-10">
+            <h1 className="text-3xl font-bold mb-6">Edit Project</h1>
+            <ProjectEditForm 
+              projectId={projectId!}
+              initialData={{
+                title: project.title,
+                description: project.description,
+                category: project.category,
+                image: project.image
+              }}
+              onCancel={() => setIsEditing(false)}
+              onSuccess={refreshProjectData}
+            />
 
-          <div className="w-full lg:w-1/2">
-            <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
-            <div className="flex flex-wrap items-center gap-4 mb-4">
-              <span className="inline-block px-3 py-1 text-sm bg-green-600 rounded-full">
-                {project.category || 'Uncategorized'}
-              </span>
-              <div className="flex items-center">
-                <div className="flex items-center mr-2">
-                  {typeof averageRating === 'string' ? (
-                    <span className="text-gray-400">{averageRating}</span>
-                  ) : (
-                    <>
-                      <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                      <span className="ml-1">{averageRating}/5</span>
-                    </>
-                  )}
-                </div>
-                <span className="text-sm text-gray-400">
-                  ({project.reviews ? project.reviews.length : 0} reviews)
+            {/* Show contributors list even in edit mode */}
+            <div className="mt-12">
+              <h2 className="text-2xl font-semibold mb-6">Project Contributors</h2>
+              <ContributorsList 
+                projectId={projectId!}
+                contributors={project.contributors || []}
+                isOwner={isOwner}
+                onContributorRemoved={handleContributorRemoved}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="w-full lg:w-1/2">
+              <div className="aspect-video bg-gray-700 rounded-lg"></div>
+            </div>
+
+            <div className="w-full lg:w-1/2">
+              <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <span className="inline-block px-3 py-1 text-sm bg-green-600 rounded-full">
+                  {project.category || 'Uncategorized'}
                 </span>
+                <div className="flex items-center">
+                  <div className="flex items-center mr-2">
+                    {typeof averageRating === 'string' ? (
+                      <span className="text-gray-400">{averageRating}</span>
+                    ) : (
+                      <>
+                        <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                        <span className="ml-1">{averageRating}/5</span>
+                      </>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    ({project.reviews ? project.reviews.length : 0} reviews)
+                  </span>
+                </div>
+              </div>
+              <p className="mb-8 text-gray-400">{project.description}</p>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => navigate('/')}
+                  className="px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-600 transition"
+                >
+                  Back to Projects
+                </button>
+                {isOwner && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-6 py-3 bg-blue-500 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Edit Project
+                  </button>
+                )}
               </div>
             </div>
-            <p className="mb-8 text-gray-400">{project.description}</p>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => navigate('/')}
-                className="px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-600 transition"
-              >
-                Back to Projects
-              </button>
-              {isOwner && (
-                <button
-                  className="px-6 py-3 bg-blue-500 rounded-lg hover:bg-blue-700 transition"
-                >
-                  Edit Project
-                </button>
-              )}
-            </div>
           </div>
-        </div>
+        )}
+        
+        {/* Contributors Section - Always visible */}
+        {!isEditing && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Project Contributors</h2>
+            {isOwner ? (
+              <ContributorsList 
+                projectId={projectId!}
+                contributors={project.contributors || []}
+                isOwner={isOwner}
+                onContributorRemoved={handleContributorRemoved}
+              />
+            ) : (
+              <div>
+                {project.contributors && project.contributors.length > 0 ? (
+                  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {project.contributors.map((contributor: any) => (
+                      <li 
+                        key={contributor.user_id}
+                        className="flex items-center bg-gray-800 p-3 rounded-lg"
+                      >
+                        <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                          <User className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {contributor.full_name || `User ${contributor.user_id.substring(0, 8)}`}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {contributor.username ? `@${contributor.username}` : 'No username'}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400 mb-8">No contributors for this project.</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Reviews Section */}
-        <div className="mt-12">
+        <div className="mt-6">
           <h2 className="text-2xl font-semibold mb-6">Latest Reviews</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {!project.reviews || project.reviews.length === 0 ? (

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { forgotPassword } from '../api/auth';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -15,15 +16,17 @@ const ForgotPassword = () => {
     setMessage(null);
     
     try {
-      // In a real app, you would call an API endpoint here
-      // const response = await forgotPassword(email);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setMessage(`Password reset instructions sent to ${email}. Please check your inbox.`);
-    } catch (err: any) {
-      setError('Failed to send password reset email. Please try again.');
+      // Call the API with proper error handling
+      try {
+        const response = await forgotPassword(email);
+        setMessage(`Password reset instructions sent to ${email}. Please check your inbox.`);
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setError('No account found with this email address.');
+        } else {
+          setError('Failed to send password reset email. Please try again.');
+        }
+      }
     } finally {
       setIsLoading(false);
     }
