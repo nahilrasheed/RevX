@@ -8,7 +8,7 @@ export interface UserProfileUpdateData {
 }
 
 export const updateUserProfile = async (userData: UserProfileUpdateData) => {
-  const response = await apiClient.post('/user/update', userData);
+  const response = await apiClient.put('/user/update', userData);
   return response.data;
 };
 
