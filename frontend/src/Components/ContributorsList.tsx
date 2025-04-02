@@ -2,20 +2,13 @@ import { useState } from 'react';
 import { User } from 'lucide-react';
 import { removeContributor } from '../api/projects';
 import { useAuth } from '../context/AuthContext';
+import { Contributor } from '../types/project';
 
-interface Contributor {
-  user_id: string;
-  project_id: string;
-  status: boolean;
-  created_at: string;
-  username?: string;
-  full_name?: string;
-}
-
+// Update the interface to match the backend data
 interface ContributorsListProps {
   projectId: string;
   contributors: Contributor[];
-  isOwner: boolean;
+  isOwner: boolean | null;
   onContributorRemoved: () => void;
 }
 
