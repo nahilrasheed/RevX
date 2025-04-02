@@ -38,18 +38,6 @@ async def create_project(
     except Exception as e:
         raise HTTPException(status_code=400, detail="Error creating project")
 
-@router.get("/my_projects", status_code=200)
-async def my_projects(user = Depends(get_current_user)):
-    try:
-        user_id = str(user.user.id)
-        projects = supabase.schema("revx").table("projects").select("*").eq("owner_id", user_id).execute()
-        return {
-            "status": "success",
-            "data": projects.data
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Error fetching projects")
-
 @router.put("/update/{project_id}", status_code=200)
 async def update_project(
     project: ProjectUpdate,
