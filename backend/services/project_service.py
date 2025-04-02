@@ -8,6 +8,7 @@ async def create_project_service(
         description: str,
         user_id: str,
         images: List[str] = None,
+        tags: List[str] = None,
 ) -> Dict[str, Any]:
     try:
         project_data = {
@@ -21,11 +22,13 @@ async def create_project_service(
         if not res.data:
             raise HTTPException(status_code=500, detail="Failed to create project")
         
+        project_id = res.data[0]["id"]
+        
         if images:
             image_data_list = []
             for image in images:
                 image_data_list.append({
-                    "project_id": res.data[0]["id"],
+                    "project_id": project_id,
                     "image_link": image,
                 })
             
@@ -34,12 +37,40 @@ async def create_project_service(
             if not res_image.data:
                 raise HTTPException(status_code=500, detail="Failed to add images to project")
         
-            res.data[0]["images"] = [img["image_link"] for img in res_image.data]
-        return res.data[0]
+        if tags:
+            tag_data_list = []
+            for tag in tags:
+                tag_data_list.append({
+                    "project_id": project_id,
+                    "tag_id": tag,
+                })
+            
+            res_tag = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
+            
+            if not res_tag.data:
+                raise HTTPException(status_code=500, detail="Failed to add tags to project")
+        
+        complete_project = await get_project_with_details(str(project_id))
+        return complete_project
+        
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating project hello: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating project: {str(e)}")
+
+async def get_project_with_details(project_id: str) -> Dict[str, Any]:
+    try:
+        result = supabase.schema("revx").rpc('get_project_with_details', {"project_id": int(project_id)}).execute()
+        
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        return result.data
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching project details: {str(e)}")
 
 async def add_contributor_service(
     project_id: str,

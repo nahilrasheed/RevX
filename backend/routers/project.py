@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
 from models.project import ProjectCreate, ContributorCreate, ReviewCreate, ProjectUpdate
 from middleware.auth_middleware import get_current_user
-from services.project_service import create_project_service, add_contributor_service, add_review_service
+from services.project_service import create_project_service, add_contributor_service, add_review_service, get_project_with_details
 
 router = APIRouter()
 
@@ -25,7 +25,8 @@ async def create_project(
             project.title,
             project.description,
             user_id,
-            project.images
+            project.images,
+            project.tags
         )
 
         return {
@@ -130,66 +131,16 @@ async def get_project(project_id: str):
     try:
         if not project_id:
             raise HTTPException(status_code=400, detail="Project ID is required")
-
-        project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
-        if not project.data:
-            raise HTTPException(status_code=404, detail="Project not found")
         
-        owner_id = project.data[0]["owner_id"]
-        owner_info = supabase.schema("revx").table("profile").select("*").eq("id", owner_id).execute()
+        project_data = await get_project_with_details(project_id)
         
-        contributors_result = supabase.schema("revx").table("contributors").select("*").eq("project_id", project_id).execute()
-        
-        contributors_with_profiles = []
-        if contributors_result.data:
-            for contributor in contributors_result.data:
-                user_id = contributor["user_id"]
-                profile = supabase.schema("revx").table("profile").select("username,avatar,full_name").eq("id", user_id).execute()
-                
-                if profile.data:
-                    contributor_data = {
-                        **contributor,
-                        "username": profile.data[0]["username"],
-                        "avatar": profile.data[0]["avatar"],
-                        "full_name": profile.data[0]["full_name"]
-                    }
-                    contributors_with_profiles.append(contributor_data)
-        
-        reviews_result = supabase.schema("revx").table("reviews").select("*").eq("project_id", project_id).execute()
-        
-        reviews_with_profiles = []
-        if reviews_result.data:
-            for review in reviews_result.data:
-                user_id = review["user_id"]
-                profile = supabase.schema("revx").table("profile").select("username,avatar,full_name").eq("id", user_id).execute()
-                
-                if profile.data:
-                    review_data = {
-                        **review,
-                        "username": profile.data[0]["username"],
-                        "avatar": profile.data[0]["avatar"],
-                        "full_name": profile.data[0]["full_name"]
-                    }
-                    reviews_with_profiles.append(review_data)
-        
-        images = supabase.schema("revx").table("project_images").select("*").eq("project_id", project_id).execute()
-
-        data = project.data[0]
-        data["owner"] = owner_info.data[0] if owner_info.data else None
-        data["contributors"] = contributors_with_profiles
-        data["reviews"] = reviews_with_profiles
-        data["images"] = [img["image_link"] for img in images.data] if images.data else []
-
         return {
             "status": "success",
-            "data": data
+            "data": project_data
         }
     except HTTPException as e:
         raise e
     except Exception as e:
-        import traceback
-        print(f"Error fetching project: {str(e)}")
-        print(traceback.format_exc())
         raise HTTPException(status_code=400, detail=f"Error fetching project: {str(e)}")
 
 @router.post("/add_contributor/{project_id}", status_code=201)
@@ -334,3 +285,21 @@ async def remove_review(
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error removing review: {str(e)}")
+    
+@router.get("/tags", status_code=200)
+async def get_tags():
+    try:
+        tags_result = supabase.schema("revx").table("tags").select("*").execute()
+        
+        if not tags_result.data:
+            return {
+                "status": "success",
+                "data": []
+            }
+        
+        return {
+            "status": "success",
+            "data": tags_result.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error fetching tags: {str(e)}")
