@@ -3,6 +3,7 @@ from middleware.auth_middleware import get_current_user
 from models.user import UserProfileUpdate
 from services.user_service import update_user_service
 from database import supabase
+import json
 
 router = APIRouter()
 
@@ -34,29 +35,34 @@ async def my_projects(user = Depends(get_current_user)):
     try:
         user_id = str(user.user.id)
         
-        projects_result = supabase.schema("revx").table("projects").select("*").eq("owner_id", user_id).execute()
+        # Use RPC function to get projects with images in a single query
+        result = supabase.rpc('get_projects_with_images', {"user_id": user_id}).execute()
         
-        if not projects_result.data:
-            return {
-                "status": "success",
-                "data": []
-            }
-        
-        projects_with_images = []
-        
-        for project in projects_result.data:
-            project_id = project["id"]
-            
-            images_result = supabase.schema("revx").table("project_images").select("image_link").eq("project_id", project_id).execute()
-            
-            project_with_images = {**project}
-            project_with_images["images"] = [img["image_link"] for img in images_result.data] if images_result.data else []
-            
-            projects_with_images.append(project_with_images)
+        # Process and return the data
+        projects_list = [json.loads(p) if isinstance(p, str) else p for p in result.data] if result.data else []
         
         return {
             "status": "success",
-            "data": projects_with_images
+            "data": projects_list
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error fetching projects: {str(e)}")
+    
+@router.get("/my_reviews", status_code=200)
+async def my_reviews(user = Depends(get_current_user)):
+    try:
+        user_id = str(user.user.id)
+        
+        result = supabase.schema("revx").rpc('get_user_reviews', {"user_id": user_id}).execute()
+        
+        reviews_list = [json.loads(r) if isinstance(r, str) else r for r in result.data] if result.data else []
+        
+        return {
+            "status": "success",
+            "data": reviews_list
+        }
+    except Exception as e:
+        import traceback
+        print(f"Error fetching reviews: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=400, detail=f"Error fetching reviews: {str(e)}")

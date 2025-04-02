@@ -57,6 +57,6 @@ export const removeContributor = async (projectId: string, contributorId: string
 };
 
 export const getMyProjects = async () => {
-  const response = await apiClient.get('/project/my_projects');
+  const response = await apiClient.get('/user/my_projects');
   return response.data;
 };
