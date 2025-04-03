@@ -73,6 +73,8 @@ async def update_project(
             title_check = supabase.schema("revx").table("projects").select("id").eq("title", project.title).execute()
             if title_check.data and title_check.data[0]["id"] != project_id:
                 raise HTTPException(status_code=400, detail="Project with this title already exists")
+            if title_check.data["id"] == project_id:
+                pass
             updates["title"] = project.title
             
         if project.description is not None:
