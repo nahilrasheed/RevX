@@ -37,10 +37,10 @@ const Hero = () => {
           ) : (
             <>
               <button 
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/explore')}
                 className="px-8 py-3 bg-white text-black rounded-lg hover:bg-gray-300 font-semibold"
               >
-                Get Started
+                Explore Projects
               </button>
               <button 
                 onClick={() => navigate('/login')}
