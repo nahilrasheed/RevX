@@ -95,16 +95,7 @@ const Dashboard = () => {
           >
             My Reviews
           </button>
-          <button 
-            onClick={() => setActiveTab('activity')}
-            className={`px-4 py-2 rounded-lg ${
-              activeTab === 'activity' 
-                ? 'ring-1 ring-red-200 text-white' 
-                : 'ring-1 ring-gray-400 text-gray-400 hover:bg-gray-800'
-            }`}
-          >
-            Recent Activity
-          </button>
+
         </div>
         
         {activeTab === 'activity' && (
