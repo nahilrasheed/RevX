@@ -71,7 +71,7 @@ const Dashboard = () => {
         <div className="flex flex-wrap gap-4 mb-8">
           <button 
             onClick={() => navigate('/upload')} 
-            className="px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-300"
+            className="px-4 py-2 ring-1 ring-red-200 text-white rounded-lg hover:bg-gray-200 hover:text-black"
           >
             Upload Project
           </button>
@@ -79,8 +79,8 @@ const Dashboard = () => {
             onClick={() => setActiveTab('projects')}
             className={`px-4 py-2 rounded-lg ${
               activeTab === 'projects' 
-                ? 'bg-gray-700 text-white' 
-                : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                ? 'ring-1 ring-red-200 text-white' 
+                : 'ring-1 ring-gray-500 text-gray-400 hover:bg-gray-800'
             }`}
           >
             My Projects ({userProjects.length})
@@ -89,8 +89,8 @@ const Dashboard = () => {
             onClick={() => setActiveTab('reviews')}
             className={`px-4 py-2 rounded-lg ${
               activeTab === 'reviews' 
-                ? 'bg-gray-700 text-white' 
-                : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                ? 'ring-1 ring-red-200 text-white' 
+                : 'ring-1 ring-gray-500 text-gray-400 hover:bg-gray-800'
             }`}
           >
             My Reviews
@@ -99,8 +99,8 @@ const Dashboard = () => {
             onClick={() => setActiveTab('activity')}
             className={`px-4 py-2 rounded-lg ${
               activeTab === 'activity' 
-                ? 'bg-gray-700 text-white' 
-                : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                ? 'ring-1 ring-red-200 text-white' 
+                : 'ring-1 ring-gray-400 text-gray-400 hover:bg-gray-800'
             }`}
           >
             Recent Activity
@@ -143,7 +143,7 @@ const Dashboard = () => {
                 {userProjects.map((project: any) => (
                   <div 
                     key={project.id} 
-                    className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-gray-600 transition cursor-pointer"
+                    className="bg-black rounded-lg overflow-hidden ring-1 ring-gray-400 hover:ring-2 hover:ring-red-200 transition cursor-pointer"
                     onClick={() => navigate(`/project/${project.id}`)}
                   >
                     <div className="aspect-video bg-gray-700"></div>
@@ -151,10 +151,10 @@ const Dashboard = () => {
                       <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                       <p className="text-gray-400 line-clamp-2">{project.description}</p>
                       <div className="mt-4 flex items-center justify-between">
-                        <span className="inline-block text-sm bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
+                        <span className="inline-block text-sm ring-1 ring-red-200 text-gray-300 px-3 py-1 rounded-full">
                           {project.category || 'Uncategorized'}
                         </span>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-red-200">
                           {new Date(project.created_at).toLocaleDateString()}
                         </span>
                       </div>

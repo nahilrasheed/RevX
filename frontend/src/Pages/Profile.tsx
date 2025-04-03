@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +27,9 @@ const Profile = () => {
     if (e.target.files && e.target.files.length > 0) {
       setProfilePic(e.target.files[0]);
     }
+  };
+  const handleDelete = () => {
+    setProfilePic(null); 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,7 +170,7 @@ const Profile = () => {
           )}
           
           {isEditing ? (
-            <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded-lg mb-8">
+            <form onSubmit={handleSubmit} className="ring-1 ring-gray-600 p-8 rounded-lg mb-8">
               <div className="mb-6">
                 <label htmlFor="username" className="block mb-2 text-sm font-medium">
                   Username
@@ -176,7 +180,7 @@ const Profile = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg ring-1 ring-gray-600 text-white bg-black focus:outline-blue-100"
                   required
                 />
               </div>
@@ -190,7 +194,7 @@ const Profile = () => {
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg ring-1 ring-gray-600 text-white bg-black focus:outline-blue-100"
                   required
                 />
               </div>
@@ -203,7 +207,7 @@ const Profile = () => {
                   id="email"
                   type="email"
                   value={user.email}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg ring-1 ring-gray-600 text-white bg-black focus:outline-blue-100"
                   disabled
                 />
                 <p className="text-sm text-gray-400 mt-1">Email cannot be changed</p>
@@ -217,7 +221,7 @@ const Profile = () => {
                   id="bio"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none min-h-[100px]"
+                  className="w-full p-3 rounded-lg bring-1 ring-1 ring-gray-600 text-white bg-black focus:outline-blue-100 min-h-[100px]"
                   placeholder="Tell us about yourself"
                 ></textarea>
               </div>
@@ -230,16 +234,36 @@ const Profile = () => {
                   id="profilePic"
                   type="file"
                   onChange={handleFileChange}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg ring-1 ring-gray-600 text-white bg-black focus:outline-blue-100 hidden"
                   accept="image/*"
                 />
+                <button
+                    type="button"
+                    onClick={() => document.getElementById('profilePic')?.click()}
+                    className="w-200 p-3 rounded-lg ring-1 ring-gray-500 text-white font-medium hover:bg-slate-800"
+                  >
+                    Upload Profile Picture
+                    </button>
+                    {profilePic && (
+                      <div className="mt-2 text-sm text-gray-300">
+                        <p className="truncate">{profilePic.name}</p>
+
+                        <button 
+                          type="button"
+                          onClick={handleDelete}
+                          className='ring-1 ring-red-600 hover:bg-red-700 rounded-lg w-10'>
+                            Delete
+                        </button>
+                      </div>
+                    )}
+                    
               </div>
               
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                  className="px-4 py-2 rounded-lg ring-1 ring-gray-600 text-white bg-black hover:bg-gray-600"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -263,7 +287,7 @@ const Profile = () => {
               </div>
             </form>
           ) : isChangingPassword ? (
-            <form onSubmit={handlePasswordChange} className="bg-gray-900 p-8 rounded-lg mb-8">
+            <form onSubmit={handlePasswordChange} className="ring-1 ring-gray-300 p-8 rounded-lg mb-8">
               <h2 className="text-2xl font-semibold mb-6">Change Password</h2>
               
               <div className="mb-6">
@@ -275,7 +299,7 @@ const Profile = () => {
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
                   required
                 />
               </div>
@@ -289,7 +313,7 @@ const Profile = () => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
                   required
                   minLength={8}
                 />
@@ -304,7 +328,7 @@ const Profile = () => {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                  className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
                   required
                 />
               </div>
@@ -322,7 +346,7 @@ const Profile = () => {
                   type="submit"
                   disabled={isSubmitting}
                   className={`px-4 py-2 ${
-                    isSubmitting ? 'bg-gray-500' : 'bg-red-600 hover:bg-red-700'
+                    isSubmitting ? 'bg-gray-500' : 'ring-1 ring-red-200 hover:underline'
                   } rounded-lg text-white flex items-center justify-center`}
                 >
                   {isSubmitting ? (
@@ -338,7 +362,7 @@ const Profile = () => {
             </form>
           ) : (
             <>
-              <div className="bg-gray-900 p-8 rounded-lg mb-8">
+              <div className=" ring-1 ring-gray-600 p-8 rounded-lg mb-8">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-3xl font-bold">
                     {user.username.charAt(0).toUpperCase()}
@@ -360,7 +384,7 @@ const Profile = () => {
                     
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-300"
+                      className="px-4 py-2 ring-1 ring-gray-100 text-white rounded-lg hover:bg-gray-100 hover:text-black"
                     >
                       Edit Profile
                     </button>
@@ -368,11 +392,11 @@ const Profile = () => {
                 </div>
               </div>
               
-              <div className="bg-gray-900 p-8 rounded-lg">
+              <div className="ring-1 ring-gray-600 p-8 rounded-lg">
                 <h2 className="text-2xl font-semibold mb-6">Account Settings</h2>
                 <button
                   onClick={() => setIsChangingPassword(true)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 w-full md:w-auto"
+                  className="px-4 py-2 ring-1 ring-red-600 text-white rounded-lg hover:bg-red-600 w-full md:w-auto"
                 >
                   Change Password
                 </button>

@@ -23,13 +23,13 @@ const Hero = () => {
             <>
               <button 
                 onClick={() => navigate('/upload')}
-                className="px-8 py-3 bg-white text-black rounded-lg hover:bg-gray-300 font-semibold"
+                className="px-8 py-3 rounded-lg ring-2 ring-gray-100 text-white bg-black hover:bg-gray-100 hover:text-black font-semibold"
               >
                 Upload Project
               </button>
               <button 
                 onClick={() => navigate('/explore')}
-                className="px-8 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-semibold"
+                className="px-8 py-3 rounded-lg ring-2 ring-gray-600 bg-slate-600 text-white bg-black hover:bg-gray-700 font-semibold"
               >
                 Explore Projects
               </button>
@@ -38,13 +38,13 @@ const Hero = () => {
             <>
               <button 
                 onClick={() => navigate('/explore')}
-                className="px-8 py-3 bg-white text-black rounded-lg hover:bg-gray-300 font-semibold"
+                className="px-8 py-3 ring-1 ring-red-100 bg-white backdrop-brightness-75 text-black rounded-lg hover:bg-gray-300 font-semibold"
               >
                 Explore Projects
               </button>
               <button 
                 onClick={() => navigate('/login')}
-                className="px-8 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-semibold"
+                className="px-8 py-3 ring-1 ring-gray-400 text-white rounded-lg hover:bg-gray-700 font-semibold hover:underline"
               >
                 Sign In
               </button>

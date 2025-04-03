@@ -82,7 +82,7 @@ const Explore = () => {
         
         {/* Search and Filter */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="flex items-center bg-gray-800 rounded-lg p-2 mb-6">
+          <div className="flex items-center ring-1 ring-gray-600 bg-gray-1000 rounded-lg p-2 mb-6 hover:ring-1 hover:ring-red-200">
             <Search className="h-5 w-5 text-gray-400 mx-2" />
             <input
               type="text"
@@ -98,7 +98,7 @@ const Explore = () => {
               className={`px-4 py-2 rounded-full ${
                 selectedCategory === null 
                   ? 'bg-white text-black' 
-                  : 'bg-gray-800 text-white hover:bg-gray-700'
+                  : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200'
               }`}
               onClick={() => setSelectedCategory(null)}
             >
@@ -110,7 +110,7 @@ const Explore = () => {
                 className={`px-4 py-2 rounded-full ${
                   category === selectedCategory 
                     ? 'bg-white text-black' 
-                    : 'bg-gray-800 text-white hover:bg-gray-700'
+                    : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200'
                 }`}
                 onClick={() => setSelectedCategory(category)}
               >
@@ -132,13 +132,15 @@ const Explore = () => {
               <div
                 key={project.id}
                 onClick={() => navigate(`/project/${project.id}`)}
-                className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-gray-600 transition cursor-pointer"
+                className="bg-gray-1000 ring-1 ring-gray-600 rounded-lg overflow-hidden hover:ring-2 hover:ring-red-200 transition cursor-pointer"
               >
-                <div className="aspect-video bg-gray-700"></div>
+                <div className="aspect-video bg-gray-700">
+
+                </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                   <p className="text-gray-400 line-clamp-3">{project.description}</p>
-                  <span className="inline-block mt-4 text-sm bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
+                  <span className="inline-block mt-4 text-sm ring-1 ring-red-200 text-gray-300 px-3 py-1 rounded-full">
                     {project.category || 'Uncategorized'}
                   </span>
                 </div>

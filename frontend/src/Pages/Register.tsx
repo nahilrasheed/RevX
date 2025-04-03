@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
   const { register: registerUser, isLoading, error: authError } = useAuth();
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
+  const [fullname, setName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +12,9 @@ const Register = () => {
   const [error, setError] = useState<string | null>(null);
   const [profilePic, setProfilePic] = useState<File | null>(null);
 
+  const handleDelete = ()=>{
+    setProfilePic(null);
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -23,15 +25,13 @@ const Register = () => {
       return;
     }
 
-    // Create full name from name and surname
-    const fullName = `${name} ${surname}`.trim();
-    
+  
     try {
       const formData = {
         email,
         username,
         password,
-        full_name: fullName,
+        full_name: fullname,
         bio: '',
         avatar: ''
       };
@@ -61,37 +61,24 @@ const Register = () => {
       
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="ring-1 ring-gray-500 p-8 rounded-lg shadow-lg w-full max-w-md"
       >
         <div className="mb-6">
           <label htmlFor="name" className="block mb-2 text-sm font-medium">
-            First Name
+            Full Name
           </label>
           <input
             id="name"
             type="text"
-            value={name}
+            value={fullname}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Your First Name"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            placeholder="Your Full Name"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
             required
           />
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="surname" className="block mb-2 text-sm font-medium">
-            Last Name
-          </label>
-          <input
-            id="surname"
-            type="text"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            placeholder="Your Last Name"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
-            required
-          />
-        </div>
+
 
         <div className="mb-6">
           <label htmlFor="username" className="block mb-2 text-sm font-medium">
@@ -102,8 +89,8 @@ const Register = () => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Choose a username"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            placeholder="Username"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
             required
           />
         </div>
@@ -118,7 +105,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
             required
           />
         </div>
@@ -133,7 +120,7 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="********"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
             required
             minLength={8}
           />
@@ -149,7 +136,7 @@ const Register = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="********"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
             required
           />
         </div>
@@ -162,9 +149,27 @@ const Register = () => {
             id="profilePic"
             type="file"
             onChange={handleFileChange}
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none hidden"
             accept="image/*"
           />
+            <button
+              type="button"
+              onClick={() => document.getElementById('profilePic')?.click()}
+                  className="w-100 p-3 rounded-lg ring-1 ring-gray-400 bg-gray-800 text-white font-medium hover:bg-black focus:outline-none"
+                  >
+                Upload ProfilePic
+            </button>
+            {profilePic && (
+              <div className='mt-2 text-sm text-gray-300 flex justify-between items-center'>
+                <p className='truncate'>{profilePic.name}</p>
+                <button 
+                type="button"
+                onClick={handleDelete}
+                className='ring-1 ring-red-600 hover:bg-red-700 rounded-lg w-11'>
+                  Delete
+                </button>
+              </div>
+            )}
         </div>
 
         <button
@@ -183,7 +188,7 @@ const Register = () => {
         
         <div className="mt-4 text-sm text-center">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:underline">
+          <Link to="/login" className="text-gray-400 hover:underline hover:text-gray-200">
             Sign in
           </Link>
         </div>

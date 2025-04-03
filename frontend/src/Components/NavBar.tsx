@@ -26,12 +26,12 @@ const NavBar = () => {
 
         {/* Navigation Links */}
         <div className="flex items-center space-x-6">
-          <Link to="/" className="hover:text-gray-300" aria-label="Home">Home</Link>
-          <Link to="/explore" className="hover:text-gray-300" aria-label="Explore">Explore</Link>
+          <Link to="/" className="hover:text-red-200" aria-label="Home">Home</Link>
+          <Link to="/explore" className="hover:text-red-200" aria-label="Explore">Explore</Link>
           {isAuthenticated && (
-            <Link to="/dashboard" className="hover:text-gray-300" aria-label="Dashboard">Dashboard</Link>
+            <Link to="/dashboard" className="hover:text-red-200" aria-label="Dashboard">Dashboard</Link>
           )}
-          <Link to="/about" className="hover:text-gray-300" aria-label="About">About</Link>
+          <Link to="/about" className="hover:text-red-200" aria-label="About">About</Link>
         </div>
 
         {/* Authentication Actions */}
@@ -46,7 +46,7 @@ const NavBar = () => {
               </Link>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600"
+                className="p-1.5 rounded-lg ring-1 ring-red-200 text-white bg-black hover:underline"
                 aria-label="Logout"
               >
                 Logout
@@ -56,14 +56,14 @@ const NavBar = () => {
             <>
               <Link
                 to="/login"
-                className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600"
+                className="p-2 rounded-lg ring-1 ring-red-200 text-white bg-black hover:bg-gray-600 hover:underline"
                 aria-label="Sign In"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="p-2 rounded-lg bg-white text-black hover:bg-gray-300"
+                className="p-2 rounded-lg text-black bg-white hover:underline hover:ring-1 hover:ring-red-200"
                 aria-label="Register"
               >
                 Register

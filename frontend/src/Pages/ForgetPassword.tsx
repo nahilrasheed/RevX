@@ -51,7 +51,7 @@ const ForgotPassword = () => {
       
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="ring-1 ring-gray-600 p-8 rounded-lg shadow-lg w-full max-w-md"
       >
         <div className="mb-6">
           <label htmlFor="email" className="block mb-2 text-sm font-medium">
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg ring-1 bg-black ring-gray-400 text-white"
             required
           />
         </div>
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
         <div className="flex justify-between">
           <button
             type="button"
-            className="p-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+            className="p-3 ring-1 ring-gray-500 text-white rounded-lg hover:bg-gray-700"
             onClick={() => navigate('/login')}
             disabled={isLoading}
           >

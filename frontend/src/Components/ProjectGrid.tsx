@@ -64,7 +64,7 @@ const ProjectGrid = () => {
       {/* Filter Section */}
       <div className="container mx-auto px-6 mb-8">
         <button
-          className="flex items-center space-x-2 bg-gray-800 rounded-lg px-4 py-2"
+          className="flex items-center space-x-2 ring-1 ring-red-200 bg-slate-900 rounded-lg px-4 py-2"
           onClick={() => setIsFilterOpen(!isFilterOpen)}
         >
           {isFilterOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -107,13 +107,13 @@ const ProjectGrid = () => {
               <div
                 key={project.id}
                 onClick={() => navigate(`/project/${project.id}`)}
-                className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-gray-600 transition-all cursor-pointer"
+                className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer"
               >
                 <div className="aspect-video bg-gray-700"></div>
-                <div className="p-6">
+                <div className="p-6 ring-2 ring-gray-600 text-white bg-black">
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                   <p className="text-gray-400">{project.description}</p>
-                  <span className="inline-block mt-4 text-sm bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
+                  <span className="inline-block mt-4 text-sm ring-1 ring-red-200 text-white bg-black px-3 py-1 rounded-full">
                     {project.category || 'Uncategorized'}
                   </span>
                 </div>

@@ -15,13 +15,19 @@ const Upload = () => {
     const [error, setError] = useState<string | null>(null);
     const [images, setImages] = useState<File[]>([]);
 
-
+    // Handle image selection
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImages(Array.from(e.target.files));
+            setImages(Array.from(e.target.files)); // Convert FileList to array
         }
     };
 
+    // Handle deleting a specific image
+    const handleDelete = (index: number) => {
+        setImages((prevImages) => prevImages.filter((_, i) => i !== index)); // Filter out the deleted image
+    };
+
+    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -80,7 +86,7 @@ const Upload = () => {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
+            <form onSubmit={handleSubmit} className="ring-1 ring-gray-400 p-8 rounded-lg shadow-lg w-full max-w-md">
                 <div className="mb-6">
                     <label htmlFor="title" className="block mb-2 text-sm font-medium">
                         Title
@@ -91,7 +97,7 @@ const Upload = () => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Project Title"
-                        className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                        className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
                         required
                     />
                 </div>
@@ -105,7 +111,7 @@ const Upload = () => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Brief Description"
-                        className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none min-h-[100px]"
+                        className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none min-h-[100px]"
                         required
                     ></textarea>
                 </div>
@@ -118,7 +124,7 @@ const Upload = () => {
                         id="category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                        className="w-full p-3 rounded-lg bg-gray-900 text-white focus:outline-none"
                         required
                     >
                         <option value="">Select a category</option>
@@ -149,12 +155,20 @@ const Upload = () => {
                     >
                         Upload Images
                     </button>
+
                     {images.length > 0 && (
                         <div className="mt-2 text-sm text-gray-300">
                             {images.map((file, index) => (
-                                <p key={index} className="truncate">
-                                    {file.name}
-                                </p>
+                                <div key={index} className="flex items-center justify-between">
+                                    <p className="truncate">{file.name}</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(index)} // Call handleDelete with the index of the image
+                                        className="ring-1 ring-red-600 rounded-lg text-white p-0.5 m-1 hover:text-red-800 text-sm"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     )}

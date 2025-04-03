@@ -33,7 +33,7 @@ const LoginPage = () => {
       
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md"
+        className=" p-8 rounded-lg shadow-lg w-full max-w-md ring-1 ring-gray-600 text-white "
       >
         <div className="mb-6">
           <label htmlFor="email" className="block mb-2 text-sm font-medium">
@@ -45,7 +45,7 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg ring-1 ring-gray-600 bg-black text-white hover:ring-1 hover:ring-red-200"
             required
           />
         </div>
@@ -60,7 +60,7 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="********"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-black ring-1 ring-gray-600 text-white"
             required
           />
         </div>
@@ -80,11 +80,11 @@ const LoginPage = () => {
         </button>
         
         <div className="mt-4 text-sm flex justify-between">
-          <Link to="/forgetpassword" className="text-blue-500 hover:underline">
+          <Link to="/forgetpassword" className="text-red-200 hover:underline hover:text-gray-400">
             Forgot password?
           </Link>
-          <Link to="/register" className="text-blue-500 hover:underline">
-            Create account
+          <Link to="/register" className="text-red-200 hover:underline hover:text-gray-400">
+            Create Account
           </Link>
         </div>
       </form>
