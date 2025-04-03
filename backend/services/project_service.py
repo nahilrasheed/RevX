@@ -60,7 +60,6 @@ async def create_project_service(
     
 async def list_projects_service() -> List[Dict[str, Any]]:
     try:
-        # Add empty dictionary as params argument
         result = supabase.schema("revx").rpc('list_projects_with_details', {}).execute()
         
         if not result.data:

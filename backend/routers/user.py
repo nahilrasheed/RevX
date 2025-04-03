@@ -17,6 +17,7 @@ async def update_user(
         user_data = user.model_dump(exclude_unset=True)
         update_data = await update_user_service(
             user_id=user_id,
+            current_email=current_user.user.email,
             **user_data
         )
 
