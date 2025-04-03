@@ -66,23 +66,21 @@ async def list_projects_service() -> List[Dict[str, Any]]:
         if not result.data:
             return []
         
-        # Handle both array and single result cases
-        if isinstance(result.data, list):
+        if isinstance(result.data, list) and len(result.data) == 1 and isinstance(result.data[0], list):
+            return result.data[0]
+        elif isinstance(result.data, list):
             return result.data
         else:
-            # If the result is a single JSON object
             import json
             if isinstance(result.data, str):
-                # Try to parse if it's a JSON string
-                return json.loads(result.data)
+                parsed_data = json.loads(result.data)
+                if isinstance(parsed_data, list) and len(parsed_data) == 1 and isinstance(parsed_data[0], list):
+                    return parsed_data[0]
+                return parsed_data
             else:
-                # Return as is if it's already an object
                 return [result.data]
         
     except Exception as e:
-        import traceback
-        print(f"Error in list_projects_service: {str(e)}")
-        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error fetching projects: {str(e)}")
 
 async def get_project_with_details(project_id: str) -> Dict[str, Any]:
