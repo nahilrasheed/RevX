@@ -4,10 +4,20 @@ import { Search } from 'lucide-react';
 import { getProjects } from '../api/projects';
 import { categories } from '../Components/Categories';
 
+// Add this interface at the top of the file
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  category?: string;
+  image_urls?: string[];
+  // Add other project properties as needed
+}
+
 const Explore = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<any[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -135,7 +145,16 @@ const Explore = () => {
                 className="bg-gray-1000 ring-1 ring-gray-600 rounded-lg overflow-hidden hover:ring-2 hover:ring-red-200 transition cursor-pointer"
               >
                 <div className="aspect-video bg-gray-700">
-
+                  {project.image_urls && project.image_urls.length > 0 ? (
+                    <img
+                      src={project.image_urls[0]} // Display the first image
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/fallback-image.jpg'; // Add a fallback image
+                      }}
+                    />
+                  ) : null}
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
