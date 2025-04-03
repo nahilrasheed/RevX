@@ -176,7 +176,7 @@ const Upload = () => {
                     <button
                         type="button"
                         onClick={() => document.getElementById('image')?.click()}
-                        className="w-full p-3 rounded-lg bg-gray-800 text-white font-medium hover:bg-black focus:outline-none"
+                        className="w-full p-3 rounded-lg bg-gray-800 text-white font-medium hover:bg-gray-600"
                     >
                         Upload Images
                     </button>
