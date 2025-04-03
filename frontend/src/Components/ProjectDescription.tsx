@@ -8,6 +8,7 @@ import ReviewList from './ReviewList';
 import AddReviewForm from './AddReviewForm';
 import ProjectHeader from './ProjectHeader';
 import { Project } from '../types/project';
+import { UserPlus, X } from 'lucide-react';
 
 const ProjectDescription = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -18,9 +19,9 @@ const ProjectDescription = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isManagingContributors, setIsManagingContributors] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Memoize refreshProjectData to prevent recreation on every render
   const refreshProjectData = useCallback(async () => {
     if (!projectId) return;
     
@@ -34,7 +35,6 @@ const ProjectDescription = () => {
     }
   }, [projectId]);
 
-  // Trigger refresh using counter state
   const triggerRefresh = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
@@ -90,7 +90,6 @@ const ProjectDescription = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-6 py-12">
-        {/* Project Header */}
         {isEditing ? (
           <div className="mb-10">
             <h1 className="text-3xl font-bold mb-6">Edit Project</h1>
@@ -103,77 +102,62 @@ const ProjectDescription = () => {
                 image: project.images?.[0]
               }}
               onCancel={() => setIsEditing(false)}
-              onSuccess={refreshProjectData}
+              onSuccess={() => {
+                refreshProjectData();
+                triggerRefresh();
+                setIsEditing(false);
+              }}
             />
-
-            {/* Show contributors list even in edit mode */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-semibold mb-6">Project Contributors</h2>
-              <ContributorsList 
-                projectId={projectId!}
-                contributors={project.contributors || []}
-                isOwner={isOwner}
-                onContributorRemoved={triggerRefresh}
-              />
-            </div>
           </div>
         ) : (
-          <>
-            <ProjectHeader 
-              project={project} 
-              isOwner={isOwner}
-              onEditClick={() => setIsEditing(true)}
-              onBackClick={() => navigate('/')}
-            />
+          <ProjectHeader 
+            project={project} 
+            isOwner={isOwner}
+            onEditClick={() => setIsEditing(true)}
+          />
+        )}
+          
+        {/* Contributors Section */}
+        <div className="mt-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold">Project Contributors</h2>
             
-            {/* Contributors Section */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-semibold mb-6">Project Contributors</h2>
-              {isOwner ? (
-                <ContributorsList 
-                  projectId={projectId!}
-                  contributors={project.contributors || []}
-                  isOwner={isOwner}
-                  onContributorRemoved={triggerRefresh}
-                />
-              ) : (
-                <div>
-                  {project.contributors && project.contributors.length > 0 ? (
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                      {project.contributors.map((contributor) => (
-                        <li 
-                          key={contributor.user_id}
-                          className="flex items-center bg-gray-800 p-3 rounded-lg"
-                        >
-                          <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">
-                            {contributor.avatar ? (
-                              <img 
-                                src={contributor.avatar} 
-                                alt="Contributor avatar" 
-                                className="w-full h-full rounded-full object-cover"
-                              />
-                            ) : (
-                              contributor.full_name?.substring(0, 2) || contributor.username?.substring(0, 2) || contributor.user_id?.substring(0, 2)
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium">
-                              {contributor.full_name || `User ${contributor.user_id.substring(0, 8)}`}
-                            </p>
-                            <p className="text-sm text-gray-400">
-                              {contributor.username ? `@${contributor.username}` : 'No username'}
-                            </p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-400 mb-8">No contributors for this project.</p>
-                  )}
-                </div>
-              )}
-            </div>
+            {isOwner && !isEditing && (
+              <button
+                onClick={() => setIsManagingContributors(!isManagingContributors)}
+                className={`px-4 py-2 rounded-lg flex items-center ${
+                  isManagingContributors 
+                    ? "bg-gray-700 text-white" 
+                    : "bg-white text-black hover:bg-gray-300"
+                }`}
+              >
+                {isManagingContributors ? (
+                  <>
+                    <X className="h-4 w-4 mr-2" />
+                    Done
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Manage Contributors
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+          
+          <ContributorsList 
+            projectId={projectId!}
+            contributors={project.contributors || []}
+            isOwner={isOwner}
+            isEditing={isManagingContributors}
+            onContributorRemoved={triggerRefresh}
+            onAddContributor={isManagingContributors ? triggerRefresh : undefined}
+          />
+        </div>
 
+        {!isEditing && !isManagingContributors && (
+          <>
             {/* Reviews Section */}
             <div className="mt-12">
               <h2 className="text-2xl font-semibold mb-6">Latest Reviews</h2>

@@ -4,13 +4,11 @@ import { Project } from '../types/project';
 
 interface ProjectHeaderProps {
   project: Project;
-  isOwner: boolean | null;  // Updated type to accept null
+  isOwner: boolean | null;
   onEditClick: () => void;
-  onBackClick: () => void;
 }
 
-const ProjectHeader = ({ project, isOwner, onEditClick, onBackClick }: ProjectHeaderProps) => {
-  // Memoize the average rating calculation to avoid recalculating on every render
+const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) => {
   const averageRating = useMemo(() => {
     if (!project.reviews || project.reviews.length === 0) return "No ratings yet";
     
@@ -58,7 +56,6 @@ const ProjectHeader = ({ project, isOwner, onEditClick, onBackClick }: ProjectHe
           </div>
         </div>
         
-        {/* Project Owner Information */}
         {project.owner && (
           <div className="mb-4 flex items-center gap-2 bg-gray-800 p-3 rounded-lg inline-block">
             <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
@@ -84,12 +81,6 @@ const ProjectHeader = ({ project, isOwner, onEditClick, onBackClick }: ProjectHe
         <p className="mb-8 text-gray-400">{project.description}</p>
 
         <div className="flex gap-4">
-          <button
-            onClick={onBackClick}
-            className="px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-600 transition"
-          >
-            Back to Projects
-          </button>
           {isOwner && (
             <button
               onClick={onEditClick}
