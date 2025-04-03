@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
-from models.user import UserCreate, UserLogin, PasswordChangeRequest
+from models.user import UserCreate, UserLogin, PasswordChangeRequest, ForgotPasswordRequest
 from services.auth_service import create_user_profile, change_password_service
 from middleware.auth_middleware import get_current_user
+from pydantic import EmailStr
+import os
 
 router = APIRouter()
 
@@ -140,4 +142,28 @@ async def change_password(
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-    
+
+@router.post("/forgot-password", status_code=200)
+async def forgot_password(request: ForgotPasswordRequest):
+    try:
+        if not request.email:
+            raise HTTPException(status_code=400, detail="Email is required")
+
+        auth_res = supabase.auth.reset_password_for_email(
+            request.email,
+            options = {
+                "redirect_to": os.getenv("RESET_PASSWORD_URL", "http://localhost:5173/resetpassword"), 
+            }
+        )
+
+        if hasattr(auth_res, 'error') and auth_res.error:
+            raise HTTPException(status_code=400, detail="Error sending reset password email")
+
+        return {
+            "status": "success",
+            "message": "Reset password email sent successfully"
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
