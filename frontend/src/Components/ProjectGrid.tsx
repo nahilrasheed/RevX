@@ -109,7 +109,22 @@ const ProjectGrid = () => {
                 onClick={() => navigate(`/project/${project.id}`)}
                 className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer"
               >
-                <div className="aspect-video bg-gray-700"></div>
+                <div className="aspect-video bg-gray-700 relative">
+                  {project.image_url ? (
+                    <img
+                      src={project.image_url}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/fallback-image.jpg' // Replace with your fallback image
+                      }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                      No image available
+                    </div>
+                  )}
+                </div>
                 <div className="p-6 ring-2 ring-gray-600 text-white bg-black">
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                   <p className="text-gray-400">{project.description}</p>

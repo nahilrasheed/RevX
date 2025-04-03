@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Star, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Star, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project } from '../types/project';
 
 interface ProjectHeaderProps {
@@ -9,6 +9,8 @@ interface ProjectHeaderProps {
 }
 
 const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const averageRating = useMemo(() => {
     if (!project.reviews || project.reviews.length === 0) return "No ratings yet";
     
@@ -19,16 +21,67 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
     return (totalRating / project.reviews.length).toFixed(1);
   }, [project.reviews]);
 
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? (project.images?.length || 1) - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === (project.images?.length || 1) - 1 ? 0 : prev + 1
+    );
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-12">
       <div className="w-full lg:w-1/2">
-        <div className="aspect-video bg-gray-700 rounded-lg"> 
-          {project.images && project.images.length > 0 && (
-            <img 
-              src={project.images[0]} 
-              alt={project.title} 
-              className="w-full h-full object-cover rounded-lg"
-            />
+        <div className="relative aspect-video bg-gray-700 rounded-lg">
+          {project.images && project.images.length > 0 ? (
+            <>
+              <img 
+                src={project.images[currentImageIndex]} 
+                alt={`${project.title} - Image ${currentImageIndex + 1}`} 
+                className="w-full h-full object-cover rounded-lg"
+              />
+              
+              {/* Navigation Arrows */}
+              {project.images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/75 transition"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/75 transition"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+
+                  {/* Dots Indicator */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {project.images.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentImageIndex === index 
+                            ? 'bg-white w-4' 
+                            : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-400">
+              No images available
+            </div>
           )}
         </div>
       </div>

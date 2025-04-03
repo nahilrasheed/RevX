@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createProject } from '../api/projects';
 import { categories } from '../Components/Categories';
 import { useAuth } from '../context/AuthContext';
 import { Images } from 'lucide-react';
+import { uploadImageToStorage } from '../utils/imageUpload';
 
 const Upload = () => {
     const navigate = useNavigate();
@@ -14,6 +15,8 @@ const Upload = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [images, setImages] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [uploadProgress, setUploadProgress] = useState<number>(0);
 
     // Handle image selection
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,24 +43,36 @@ const Upload = () => {
         setError(null);
 
         try {
+            // Upload all images to Supabase Storage
+            const uploadedUrls = await Promise.all(
+                images.map(async (file, index) => {
+                    const url = await uploadImageToStorage(file);
+                    setUploadProgress((prev) => ((index + 1) / images.length) * 100);
+                    return url;
+                })
+            );
+
+            // Create project with image URLs
             const projectData = {
                 title,
                 description,
                 category,
-                images,
+                image_urls: uploadedUrls,
             };
 
             const response = await createProject(projectData);
 
-            if (response.status === 'success') {
+            if (response.ok) {
                 navigate(`/project/${response.data.id}`);
             } else {
-                setError('Failed to upload project');
+                throw new Error('Failed to create project');
             }
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Error uploading project');
+            setError(err.message || 'Error uploading project');
+            // Optionally cleanup uploaded images if project creation fails
         } finally {
             setIsLoading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -74,6 +89,16 @@ const Upload = () => {
             </div>
         );
     }
+
+    // Add upload progress indicator
+    const progressBar = uploadProgress > 0 && (
+        <div className="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+            <div 
+                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+            />
+        </div>
+    );
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white py-12">
@@ -173,6 +198,8 @@ const Upload = () => {
                         </div>
                     )}
                 </div>
+
+                {progressBar}
 
                 <button
                     type="submit"
