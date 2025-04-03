@@ -2,7 +2,13 @@ from fastapi import APIRouter, HTTPException, Depends
 from database import supabase
 from models.project import ProjectCreate, ContributorCreate, ReviewCreate, ProjectUpdate
 from middleware.auth_middleware import get_current_user
-from services.project_service import create_project_service, add_contributor_service, add_review_service, get_project_with_details
+from services.project_service import (
+    create_project_service, 
+    add_contributor_service, 
+    add_review_service, 
+    get_project_with_details, 
+    list_projects_service
+)
 
 router = APIRouter()
 
@@ -128,13 +134,13 @@ async def update_project(
 @router.get("/list", status_code=200)
 async def list_projects():
     try:
-        projects = supabase.schema("revx").table("projects").select("*").execute()
+        projects = await list_projects_service()
         return {
             "status": "success",
-            "data": projects.data
+            "data": projects
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Error fetching projects")
+        raise HTTPException(status_code=400, detail=f"Error fetching projects: {str(e)}")
 
 @router.get("/get/{project_id}", status_code=200)
 async def get_project(project_id: str):
