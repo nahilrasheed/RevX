@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { getProjects } from '../api/projects';
 import { categories } from '../Components/Categories';
-import ProjectGrid from '../Components/ProjectGrid';
 
 const Explore = () => {
   const navigate = useNavigate();
@@ -122,7 +121,33 @@ const Explore = () => {
         </div>
         
         {/* Project Grid */}
-        <ProjectGrid projects={filteredProjects} />
+        {filteredProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-semibold mb-4">No projects found</h2>
+            <p className="text-gray-400">Try adjusting your search or filter criteria</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                onClick={() => navigate(`/project/${project.id}`)}
+                className="bg-gray-1000 ring-1 ring-gray-600 rounded-lg overflow-hidden hover:ring-2 hover:ring-red-200 transition cursor-pointer"
+              >
+                <div className="aspect-video bg-gray-700">
+
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
+                  <p className="text-gray-400 line-clamp-3">{project.description}</p>
+                  <span className="inline-block mt-4 text-sm ring-1 ring-red-200 text-gray-300 px-3 py-1 rounded-full">
+                    {project.category || 'Uncategorized'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
