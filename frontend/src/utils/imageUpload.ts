@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseClient';
+// import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 export const uploadImageToStorage = async (file: File) => {
