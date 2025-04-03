@@ -117,6 +117,9 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
                   src={project.owner.avatar} 
                   alt="Owner avatar" 
                   className="w-full h-full rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full">${project.owner.full_name?.substring(0, 2) || project.owner.username?.substring(0, 2) || 'U'}</div>`;
+                  }}
                 />
               ) : (
                 <User className="h-4 w-4" />

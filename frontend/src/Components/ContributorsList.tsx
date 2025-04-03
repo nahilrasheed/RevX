@@ -191,9 +191,19 @@ const ContributorsList = ({
                         src={contributor.avatar}
                         alt="Contributor avatar"
                         className="w-full h-full rounded-full object-cover"
+                        onError={(e) => {
+                          const target = e.currentTarget.parentElement;
+                          if (target) {
+                            const initials = contributor.full_name?.substring(0, 2) || 
+                                            contributor.username?.substring(0, 2) || 'U';
+                            target.innerHTML = `<div class="flex items-center justify-center w-full h-full text-sm">${initials}</div>`;
+                          }
+                        }}
                       />
                     ) : (
-                      <User className="h-4 w-4" />
+                      <div className="flex items-center justify-center w-full h-full text-sm">
+                        {contributor.full_name?.substring(0, 2) || contributor.username?.substring(0, 2) || 'U'}
+                      </div>
                     )}
                   </div>
                   <div>
@@ -237,19 +247,30 @@ const ContributorsList = ({
                       src={contributor.avatar}
                       alt="Contributor avatar"
                       className="w-full h-full rounded-full object-cover"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        const target = e.currentTarget.parentElement;
+                        if (target) {
+                          const initials = contributor.full_name?.substring(0, 2) || 
+                                          contributor.username?.substring(0, 2) || 'U';
+                          target.innerHTML = `<div class="flex items-center justify-center w-full h-full text-sm">${initials}</div>`;
+                        }
+                      }}
                     />
                   ) : (
-                    contributor.full_name?.substring(0, 2) || contributor.username?.substring(0, 2) || contributor.user_id?.substring(0, 2)
+                    <div className="flex items-center justify-center w-full h-full text-sm">
+                      {contributor.full_name?.substring(0, 2) || contributor.username?.substring(0, 2) || 'U'}
+                    </div>
                   )}
                 </div>
                 <div>
-                  <p className="font-medium">
+                   <p className="font-medium">
                     {contributor.full_name || `User ${contributor.user_id.substring(0, 8)}`}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {contributor.username ? `@${contributor.username}` : 'No username'}
-                  </p>
-                </div>
+                   </p>
+                   <p className="text-sm text-gray-400">
+                      {contributor.username ? `@${contributor.username}` : 'No username'}
+                   </p>
+                 </div>
               </li>
             ))}
           </ul>

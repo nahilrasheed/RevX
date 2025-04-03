@@ -32,9 +32,14 @@ const ReviewList = ({ reviews }: ReviewListProps) => {
                   src={review.avatar} 
                   alt="User avatar" 
                   className="w-full h-full rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full">${review.full_name?.substring(0, 2) || review.username?.substring(0, 2) || 'U'}</div>`;
+                  }}
                 />
               ) : (
-                review.full_name?.substring(0, 2) || review.username?.substring(0, 2) || review.user_id?.substring(0, 2) || 'U'
+                <div className="flex items-center justify-center w-full h-full text-sm">
+                  {review.full_name?.substring(0, 2) || review.username?.substring(0, 2) || review.user_id?.substring(0, 2) || 'U'}
+                </div>
               )}
             </div>
             <div>
@@ -55,7 +60,11 @@ const ReviewList = ({ reviews }: ReviewListProps) => {
             </div>
             <span className="ml-2 text-sm">({review.rating}/5)</span>
           </div>
-          <p className="text-gray-400">{review.review}</p>
+          {review.review ? (
+            <p className="text-gray-400">{review.review}</p>
+          ) : (
+            <p className="text-gray-500 italic">No review</p>
+          )}
         </div>
       ))}
     </div>
