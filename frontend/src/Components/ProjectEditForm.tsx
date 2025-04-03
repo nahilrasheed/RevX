@@ -57,7 +57,7 @@ const ProjectEditForm = ({ projectId, initialData, onCancel, onSuccess }: Projec
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="bg-gray-900 p-6 rounded-lg mb-6">
+      <form onSubmit={handleSubmit} className="ring-1 ring-red-200 bg-gray-1000 p-6 rounded-lg mb-6">
         {error && (
           <div className="bg-red-500 text-white p-4 rounded-lg mb-6">
             {error}
@@ -73,7 +73,7 @@ const ProjectEditForm = ({ projectId, initialData, onCancel, onSuccess }: Projec
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg ring-1 ring-gray-500 bg-gray-900 text-white focus:outline-none"
             required
           />
         </div>
@@ -86,7 +86,7 @@ const ProjectEditForm = ({ projectId, initialData, onCancel, onSuccess }: Projec
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none min-h-[100px]"
+            className="w-full p-3 rounded-lg ring-1 ring-gray-500 bg-gray-900 text-white focus:outline-none min-h-[100px]"
             required
           ></textarea>
         </div>
@@ -99,7 +99,7 @@ const ProjectEditForm = ({ projectId, initialData, onCancel, onSuccess }: Projec
             id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+            className="w-full p-3 rounded-lg bg-gray-900 ring-1 ring-gray-500 text-white focus:outline-none"
           >
             <option value="">Select a category</option>
             {categories.map((cat, index) => (
@@ -114,7 +114,7 @@ const ProjectEditForm = ({ projectId, initialData, onCancel, onSuccess }: Projec
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+            className="px-4 py-2 ring-1 ring-gray-700 text-white rounded-lg hover:bg-gray-600"
             disabled={isLoading}
           >
             Cancel

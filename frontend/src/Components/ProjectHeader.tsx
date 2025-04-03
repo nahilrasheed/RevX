@@ -137,7 +137,7 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
           {isOwner && (
             <button
               onClick={onEditClick}
-              className="px-6 py-3 bg-blue-500 rounded-lg hover:bg-blue-700 transition"
+              className="px-6 py-3 ring-1 ring-blue-500 rounded-lg hover:bg-blue-700 transition"
             >
               Edit Project
             </button>

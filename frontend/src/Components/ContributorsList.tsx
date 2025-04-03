@@ -104,7 +104,7 @@ const ContributorsList = ({
       
       {/* Add Contributor Form - Only show when in editing mode */}
       {isOwner && isEditing && (
-        <div className="bg-gray-900 p-6 rounded-lg mb-6">
+        <div className="bg-gray-950 ring-1 ring-gray-500 p-6 rounded-lg mb-6">
           <h3 className="text-xl font-semibold mb-4">Add Contributors</h3>
 
           {contributorSuccess && (
@@ -144,7 +144,7 @@ const ContributorsList = ({
                 value={newContributorUsername}
                 onChange={(e) => setNewContributorUsername(e.target.value)}
                 placeholder="Enter username of contributor"
-                className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none"
+                className="w-full p-3 rounded-lg ring-1 ring-gray-500 bg-gray-900 text-white focus:outline-none"
                 required
                 disabled={isAddingContributor}
               />
@@ -158,8 +158,8 @@ const ContributorsList = ({
               disabled={isAddingContributor || !newContributorUsername.trim()}
               className={`px-4 py-3 ${
                 isAddingContributor || !newContributorUsername.trim()
-                  ? 'bg-gray-500 cursor-not-allowed'
-                  : 'bg-green-600 hover:bg-green-700'
+                  ? 'ring-1 ring-gray-500 cursor-not-allowed hover:bg-slate-500'
+                  : 'ring-1 ring-green-600 hover:bg-green-700'
               } text-white rounded-lg flex items-center transition`}
             >
               {isAddingContributor ? (
@@ -212,7 +212,7 @@ const ContributorsList = ({
                   className={`px-3 py-1 ${
                     isLoading && removingId === contributor.id
                       ? 'bg-gray-600'
-                      : 'bg-red-600 hover:bg-red-700'
+                      : 'ring-1 ring-red-400 hover:bg-red-700'
                   } text-white rounded-lg text-sm`}
                 >
                   {isLoading && removingId === contributor.id ? (
