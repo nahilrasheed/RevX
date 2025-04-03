@@ -58,7 +58,7 @@ const AddReviewForm = ({ projectId, onReviewAdded }: AddReviewFormProps) => {
   };
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg">
+    <div className="ring-1 ring-gray-700 bg-gray-950 p-6 rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Add Your Review</h2>
       
       {success && (
@@ -112,7 +112,7 @@ const AddReviewForm = ({ projectId, onReviewAdded }: AddReviewFormProps) => {
             value={review}
             onChange={(e) => setReview(e.target.value)}
             placeholder="Write your thoughts about this project..."
-            className="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none min-h-[100px]"
+            className="w-full p-3 rounded-lg ring-1 ring-gray-400 bg-black text-white min-h-[100px]"
             required
           ></textarea>
         </div>

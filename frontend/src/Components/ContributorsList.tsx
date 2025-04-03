@@ -229,7 +229,7 @@ const ContributorsList = ({
             {contributors.map((contributor) => (
               <li
                 key={contributor.id || contributor.user_id}
-                className="flex items-center bg-gray-800 p-3 rounded-lg"
+                className="flex items-center bg-gray-950 ring-1 ring-gray-500 p-3 rounded-lg"
               >
                 <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">
                   {contributor.avatar ? (

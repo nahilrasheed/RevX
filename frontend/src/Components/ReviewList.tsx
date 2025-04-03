@@ -23,7 +23,7 @@ const ReviewList = ({ reviews }: ReviewListProps) => {
       {sortedReviews.map((review, index) => (
         <div
           key={review.id || index}
-          className="bg-gray-800 p-6 rounded-lg hover:ring-2 hover:ring-gray-600"
+          className="ring-1 ring-gray-500 p-6 rounded-lg hover:ring-2 hover:ring-gray-600"
         >
           <div className="mb-4 flex items-center gap-2">
             <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">

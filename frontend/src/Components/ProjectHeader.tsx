@@ -22,7 +22,7 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
   return (
     <div className="flex flex-col lg:flex-row gap-12">
       <div className="w-full lg:w-1/2">
-        <div className="aspect-video bg-gray-700 rounded-lg">
+        <div className="aspect-video bg-gray-700 rounded-lg"> 
           {project.images && project.images.length > 0 && (
             <img 
               src={project.images[0]} 
@@ -36,8 +36,8 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
       <div className="w-full lg:w-1/2">
         <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
         <div className="flex flex-wrap items-center gap-4 mb-4">
-          <span className="inline-block px-3 py-1 text-sm bg-green-600 rounded-full">
-            {project.category || 'Uncategorized'}
+          <span className="inline-block px-3 py-1 text-sm ring-1 ring-red-200 rounded-lg">
+            {project.category || 'uncategorized'}
           </span>
           <div className="flex items-center">
             <div className="flex items-center mr-2">
@@ -57,8 +57,8 @@ const ProjectHeader = ({ project, isOwner, onEditClick }: ProjectHeaderProps) =>
         </div>
         
         {project.owner && (
-          <div className="mb-4 flex items-center gap-2 bg-gray-800 p-3 rounded-lg inline-block">
-            <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+          <div className="mb-4 flex items-center gap-2 ring-1 ring-gray-600 bg-gray-950 p-3 rounded-lg inline-block">
+            <div className="w-8 h-8 rounded-full bg-gray-1000 flex items-center justify-center">
               {project.owner.avatar ? (
                 <img 
                   src={project.owner.avatar} 
