@@ -164,7 +164,7 @@ const Upload = () => {
                                     <button
                                         type="button"
                                         onClick={() => handleDelete(index)} // Call handleDelete with the index of the image
-                                        className="ring-1 ring-red-600 rounded-lg text-white p-0.5 m-1 hover:text-red-800 text-sm"
+                                        className="ring-1 ring-red-600 rounded-lg text-white p-0.5   m-1 hover:text-red-800 text-sm"
                                     >
                                         Delete
                                     </button>

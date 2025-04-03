@@ -95,9 +95,9 @@ const Explore = () => {
           
           <div className="flex flex-wrap gap-2">
             <button
-              className={`px-4 py-2 rounded-full ${
+              className={`px-4 py-2 rounded-lg ${
                 selectedCategory === null 
-                  ? 'bg-white text-black' 
+                  ? 'ring-2 ring-red-200 text-white' 
                   : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200'
               }`}
               onClick={() => setSelectedCategory(null)}
@@ -107,9 +107,9 @@ const Explore = () => {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className={`px-4 py-2 rounded-full ${
+                className={`px-4 py-2 rounded-lg ${
                   category === selectedCategory 
-                    ? 'bg-white text-black' 
+                    ? 'ring-1 ring-red-200 text-white' 
                     : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200'
                 }`}
                 onClick={() => setSelectedCategory(category)}
