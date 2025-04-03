@@ -96,14 +96,24 @@ async def update_project(
                     image_result = supabase.schema("revx").table("project_images").insert(image_data_list).execute()
                     if not image_result.data:
                         raise HTTPException(status_code=500, detail="Failed to update project images")
+                    
+            if project.tags is not None:
+                supabase.schema("revx").table("project_R_tag").delete().eq("project_id", project_id).execute()
+                
+                if project.tags:
+                    tag_data_list = []
+                    for tag in project.tags:
+                        tag_data_list.append({
+                            "project_id": project_id,
+                            "tag_id": tag,
+                        })
+                    
+                    if tag_data_list:
+                        tag_result = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
+                        if not tag_result.data:
+                            raise HTTPException(status_code=500, detail="Failed to update project tags")
 
-        # Get the updated project with images
-        updated_project = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
-        images = supabase.schema("revx").table("project_images").select("*").eq("project_id", project_id).execute()
-        
-        # Combine project data with images
-        project_data = updated_project.data[0]
-        project_data["images"] = [img["image_link"] for img in images.data] if images.data else []
+            project_data = await get_project_with_details(project_id)
 
         return {
             "status": "success",
