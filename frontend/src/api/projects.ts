@@ -39,6 +39,11 @@ export const addReview = async (projectId: string, reviewData: ReviewData) => {
   return response.data;
 };
 
+export const removeReview = async (reviewId: string) => {
+  const response = await apiClient.delete(`/project/remove_review/${reviewId}`);
+  return response.data;
+};
+
 export const addContributor = async (projectId: string, data: { username: string }) => {
   const response = await apiClient.post(`/project/add_contributor/${projectId}`, data);
   return response.data;

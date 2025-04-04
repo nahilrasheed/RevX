@@ -161,7 +161,10 @@ const ProjectDescription = () => {
             {/* Reviews Section */}
             <div className="mt-12">
               <h2 className="text-2xl font-semibold mb-6">Latest Reviews</h2>
-              <ReviewList reviews={project.reviews || []} />
+              <ReviewList 
+                reviews={project.reviews || []}
+                onReviewRemoved={triggerRefresh}
+              />
             </div>
 
             {/* Add Review Section */}
