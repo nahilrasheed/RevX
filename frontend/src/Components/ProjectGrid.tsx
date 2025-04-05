@@ -68,40 +68,36 @@ const ProjectGrid = () => {
              </p>
          )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayedProjects.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => navigate(`/project/${project.id}`)}
-              className="bg-gray-950 rounded-lg ring-1 ring-gray-700 overflow-hidden hover:ring-2 hover:ring-red-400 transition-all cursor-pointer flex flex-col"
-            >
-              {/* Display first image or placeholder */}
-              <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500">
-                {project.images && project.images.length > 0 ? (
-                   <img
-                     src={project.images[0]}
-                     alt={project.title}
-                     className="w-full h-full object-cover"
-                     onError={(e) => { e.currentTarget.style.display = 'none'; /* Hide broken img */ }}
-                   />
-                ) : (
-                   <span>No Image</span>
-                )}
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold mb-2 text-white truncate">{project.title}</h3>
-                <p className="text-gray-400 line-clamp-3 mb-4 flex-grow">{project.description}</p>
-                {/* Display Tags */}
-                <div className="flex flex-wrap gap-2 mt-auto">
-                   {project.tags && project.tags.length > 0 ? (
-                     project.tags.slice(0, 3).map((tag) => ( // Show max 3 tags
-                       <span key={tag.tag_id} className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full">
-                         {tag.tag_name}
-                       </span>
-                     ))
-                   ) : null}
-                   {project.tags && project.tags.length > 3 && (
-                      <span className="text-xs text-gray-500">+{project.tags.length - 3} more</span>
-                   )}
+          {filteredProjects.length === 0 ? (
+            <p className="text-center text-gray-400 col-span-full">
+              No projects found for this category.
+            </p>
+          ) : (
+            filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                onClick={() => navigate(`/project/${project.id}`)}
+                className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer"
+              >
+                <div className="aspect-video bg-gray-700">
+                  {project.images && project.images.length > 0 ? (
+                    <img
+                      src={project.images[0]}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      No images
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 ring-2 ring-gray-600 text-white bg-black">
+                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
+                  <p className="text-gray-400">{project.description}</p>
+                  <span className="inline-block mt-4 text-sm ring-1 ring-red-200 text-white bg-black px-3 py-1 rounded-full">
+                    {project.category || 'Uncategorized'}
+                  </span>
                 </div>
               </div>
             </div>
