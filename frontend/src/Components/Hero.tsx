@@ -23,7 +23,7 @@ const Hero = () => {
             <>
               <button 
                 onClick={() => navigate('/upload')}
-                className="px-8 py-3 rounded-lg ring-2 ring-gray-100 text-white bg-black hover:bg-gray-100 hover:text-black font-semibold"
+                className="px-8 py-3 rounded-lg ring-2 ring-gray-100 text-white bg-black hover:bg-gray-100 hover:text-black font-semibold transition-all duration-300 ease-in-out cursor-pointer"
               >
                 Upload Project
               </button>

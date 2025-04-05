@@ -108,7 +108,7 @@ const Explore = () => {
               className={`px-4 py-2 rounded-lg ${
                 selectedCategory === null 
                   ? 'ring-2 ring-red-200 text-white' 
-                  : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200'
+                  : 'ring-1 ring-gray-600 text-white hover:bg-gray-700 hover:ring-1 hover:ring-red-200 transition-all duration-300 ease-in-out cursor-pointer'
               }`}
               onClick={() => setSelectedCategory(null)}
             >

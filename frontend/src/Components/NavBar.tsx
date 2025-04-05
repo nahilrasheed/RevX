@@ -26,7 +26,7 @@ const NavBar = () => {
 
         {/* Navigation Links */}
         <div className="flex items-center space-x-6">
-          <Link to="/" className="hover:text-red-200" aria-label="Home">Home</Link>
+          <Link to="/" className="hover:text-red-200 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Home">Home</Link>
           <Link to="/explore" className="hover:text-red-200" aria-label="Explore">Explore</Link>
           {isAuthenticated && (
             <Link to="/dashboard" className="hover:text-red-200" aria-label="Dashboard">Dashboard</Link>
