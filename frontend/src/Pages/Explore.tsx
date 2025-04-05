@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Check, Tag } from "lucide-react";
+import { Search, X, Check, Tag, Star } from "lucide-react";
 import { getProjects, getTags } from "../api/projects";
 import { Project, Tag as TagType } from "../types/project";
 
@@ -240,7 +240,7 @@ const Explore = () => {
                 onClick={() => navigate(`/project/${project.id}`)}
                 className="bg-gray-950 rounded-lg ring-1 ring-gray-700 overflow-hidden hover:ring-2 hover:ring-red-400 transition-all cursor-pointer flex flex-col"
               >
-                <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500">
+                <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500 h-48 overflow-hidden">
                   {Array.isArray(project.images) &&
                   project.images.length > 0 &&
                   project.images[0] ? (
@@ -261,6 +261,17 @@ const Explore = () => {
                   <p className="text-gray-400 line-clamp-3 mb-4 flex-grow">
                     {project.description}
                   </p>
+                  
+                  {/* Average Rating Display */}
+                  <div className="flex items-center mb-3">
+                    <Star className="h-4 w-4 text-yellow-400 mr-1 flex-shrink-0" />
+                    <span className="text-sm text-gray-300">
+                      {(typeof project.avg_rating === 'number' && project.avg_rating > 0) 
+                        ? project.avg_rating.toFixed(1) 
+                        : 'No ratings'}
+                    </span>
+                  </div>
+                  
                   <div className="flex flex-wrap gap-2 mt-auto">
                     {Array.isArray(project.tags) && project.tags.length > 0 ? (
                       project.tags.slice(0, 3).map((tag) => (
