@@ -7,7 +7,8 @@ from services.project_service import (
     add_contributor_service, 
     add_review_service, 
     get_project_with_details, 
-    list_projects_service
+    list_projects_service,
+    delete_project_service
 )
 
 router = APIRouter()
@@ -321,3 +322,32 @@ async def get_tags():
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error fetching tags: {str(e)}")
+    
+@router.delete("/delete/{project_id}", status_code=200)
+async def delete_project(
+    project_id: str,
+    user = Depends(get_current_user)
+):
+    try:
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Project ID is required")
+        
+        # Check if project exists
+        project_check = supabase.schema("revx").table("projects").select("*").eq("id", project_id).execute()
+        if not project_check.data:
+            raise HTTPException(status_code=404, detail="Project not found")
+            
+        # Verify the user owns this project - only allow users to delete their own projects
+        if project_check.data[0]["owner_id"] != user.user.id:
+            raise HTTPException(status_code=403, detail="You can only delete your own projects")
+        
+        res = await delete_project_service(project_id)
+        if not res:
+            raise HTTPException(status_code=500, detail="Failed to delete project")
+
+        return res
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error deleting project: {str(e)}"
+)

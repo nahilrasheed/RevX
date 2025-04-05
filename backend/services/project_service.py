@@ -142,3 +142,45 @@ async def add_review_service(
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding review: {str(e)}")
+    
+async def delete_project_service(
+    project_id: str,
+) -> Dict[str, Any]:
+    try:
+        # Direct table operations, no type conversions needed
+        
+        # 1. Delete reviews
+        reviews_result = supabase.schema("revx").table("reviews").delete().eq("project_id", project_id).execute()
+        
+        # 2. Delete contributors
+        contributors_result = supabase.schema("revx").table("contributors").delete().eq("project_id", project_id).execute()
+        
+        # 3. Delete project images
+        images_result = supabase.schema("revx").table("project_images").delete().eq("project_id", project_id).execute()
+        
+        # 4. Delete project tags relationship
+        tags_result = supabase.schema("revx").table("project_R_tag").delete().eq("project_id", project_id).execute()
+        
+        # 5. Finally delete the project itself
+        project_result = supabase.schema("revx").table("projects").delete().eq("id", project_id).execute()
+        
+        if not project_result.data:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        return {
+            "status": "success",
+            "message": "Project deleted successfully",
+            "data": {
+                "project_id": project_id,
+                "related_data_deleted": {
+                    "reviews": len(reviews_result.data) if reviews_result.data else 0,
+                    "contributors": len(contributors_result.data) if contributors_result.data else 0,
+                    "images": len(images_result.data) if images_result.data else 0, 
+                    "tags": len(tags_result.data) if tags_result.data else 0
+                }
+            }
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting project: {str(e)}")
