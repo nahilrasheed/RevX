@@ -27,20 +27,31 @@ REV-X is a web-based platform that allows users to upload completed projects, re
    git clone https://github.com/Kandarp05/RevX
    cd RevX
    ```
-2. Setup backend
-   ```bash
-   cd backend
-   source /venv/bin/activate
-   pip install -r requirements.txt
-   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-   ```
-> Your backend is up at *0.0.0.0:8000*
+2. **Setup backend**:
+    ```bash
+    cd backend
+    # Create and activate a virtual environment (recommended)
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    pip install -r requirements.txt
 
-3. Setup frontend
-   ```
-   cd frontend
-   npm i
-   npm run dev
-   ```
-> Your frontend is up at *http://localhost:5173*
+    # Create a .env file in the 'backend' directory with your Supabase credentials:
+    # SUPABASE_URL="YOUR_SUPABASE_URL"
+    # SUPABASE_KEY="YOUR_SUPABASE_ANON_KEY"
+
+    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ```
+    > The backend should now be running at `http://localhost:8000`.
+
+3.  **Setup Frontend**:
+    ````bash
+    cd frontend
+    npm install
+
+    # Create a .env file in the 'frontend' directory:
+    # VITE_API_URL="http://localhost:8000" # Or your backend URL if different
+
+    npm run dev
+    ````
+    > The frontend development server should now be running at `http://localhost:5173`.
 
