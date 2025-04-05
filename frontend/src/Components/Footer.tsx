@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { categories } from './Categories';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -12,18 +11,8 @@ const Footer = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h4 className="font-bold mb-4">Explore</h4>
-              <div className="space-y-2">
-                {categories.map((category, index) => (
-                  <Link 
-                    key={index}
-                    to={`/explore?category=${category}`} 
-                    className="block text-gray-400 hover:text-white"
-                  >
-                    {category}
-                  </Link>
-                ))}
-              </div>
+              <h4 className="font-bold mb-4">RevX</h4>
+              <p className="text-gray-400 text-sm">Share, review, and collaborate on projects.</p>
             </div>
             <div>
               <h4 className="font-bold mb-4">Quick Links</h4>

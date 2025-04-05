@@ -40,15 +40,22 @@ async def create_project_service(
         if tags:
             tag_data_list = []
             for tag in tags:
-                tag_data_list.append({
-                    "project_id": project_id,
-                    "tag_id": tag,
-                })
+                try:
+                    # Convert tag to integer to ensure correct type
+                    tag_id = int(tag)
+                    tag_data_list.append({
+                        "project_id": project_id,
+                        "tag_id": tag_id,
+                    })
+                except (ValueError, TypeError):
+                    # Skip invalid tag IDs
+                    continue
             
-            res_tag = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
-            
-            if not res_tag.data:
-                raise HTTPException(status_code=500, detail="Failed to add tags to project")
+            if tag_data_list:  # Only insert if we have valid tags
+                res_tag = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
+                
+                if not res_tag.data:
+                    raise HTTPException(status_code=500, detail="Failed to add tags to project")
         
         complete_project = await get_project_with_details(str(project_id))
         return complete_project

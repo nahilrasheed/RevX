@@ -1,28 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
-import { categories } from './Categories';
 import { getProjects } from '../api/projects';
+import { Project, Tag } from '../types/project'; // Import Project and Tag types
 
 const ProjectGrid = () => {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]); // Use Project type
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setIsLoading(true); // Set loading true at the start
+      setError(null); // Reset error
       try {
         const response = await getProjects();
         if (response.status === 'success') {
-          setProjects(response.data);
+          // Ensure response.data is an array before setting
+          setProjects(Array.isArray(response.data) ? response.data : []);
         } else {
-          setError('Failed to load projects');
+          setError(response.message || 'Failed to load projects');
+          setProjects([]); // Clear projects on error
         }
       } catch (err: any) {
-        setError(err.response?.data?.detail || 'Error loading projects');
+        setError(err.response?.data?.detail || err.message || 'Error loading projects');
+        setProjects([]); // Clear projects on error
       } finally {
         setIsLoading(false);
       }
@@ -31,10 +33,7 @@ const ProjectGrid = () => {
     fetchProjects();
   }, []);
 
-  // Filter logic: Show all if no category selected
-  const filteredProjects = selectedCategory
-    ? projects.filter((project) => project.category === selectedCategory)
-    : projects;
+  const displayedProjects = projects; // Use all fetched projects
 
   if (isLoading) {
     return (
@@ -47,11 +46,11 @@ const ProjectGrid = () => {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
-        <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-4 px-4 py-2 bg-white text-black rounded-lg"
+        <h1 className="text-2xl font-bold text-red-500 mb-4">Error Loading Projects</h1>
+        <p className="text-gray-400">{error}</p>
+        <button
+          onClick={() => window.location.reload()} // Simple retry
+          className="mt-4 px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-300"
         >
           Try Again
         </button>
@@ -61,65 +60,52 @@ const ProjectGrid = () => {
 
   return (
     <div>
-      {/* Filter Section */}
-      <div className="container mx-auto px-6 mb-8">
-        <button
-          className="flex items-center space-x-2 ring-1 ring-red-200 bg-slate-900 rounded-lg px-4 py-2"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
-        >
-          {isFilterOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          <span>Filter by Category</span>
-          <Search className="h-5 w-5" />
-        </button>
-
-        {isFilterOpen && (
-          <div className="mt-4 bg-gray-800 rounded-lg p-4">
-            <button
-              className={`block w-full text-left px-4 py-2 hover:bg-gray-700 rounded ${!selectedCategory ? 'bg-gray-600' : ''}`}
-              onClick={() => setSelectedCategory(null)}
-            >
-              All Categories
-            </button>
-            {categories.map((category, index) => (
-              <button
-                key={index}
-                className={`block w-full text-left px-4 py-2 hover:bg-gray-700 rounded ${
-                  category === selectedCategory ? 'bg-gray-600' : ''
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Projects Grid */}
       <div className="container mx-auto px-6 pb-20">
+         {displayedProjects.length === 0 && !isLoading && (
+             <p className="text-center text-gray-400 col-span-full py-10">
+               No projects found.
+             </p>
+         )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.length === 0 ? (
-            <p className="text-center text-gray-400 col-span-full">
-              No projects found for this category.
-            </p>
-          ) : (
-            filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                onClick={() => navigate(`/project/${project.id}`)}
-                className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer"
-              >
-                <div className="aspect-video bg-gray-700"></div>
-                <div className="p-6 ring-2 ring-gray-600 text-white bg-black">
-                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                  <p className="text-gray-400">{project.description}</p>
-                  <span className="inline-block mt-4 text-sm ring-1 ring-red-200 text-white bg-black px-3 py-1 rounded-full">
-                    {project.category || 'Uncategorized'}
-                  </span>
+          {displayedProjects.map((project) => (
+            <div
+              key={project.id}
+              onClick={() => navigate(`/project/${project.id}`)}
+              className="bg-gray-950 rounded-lg ring-1 ring-gray-700 overflow-hidden hover:ring-2 hover:ring-red-400 transition-all cursor-pointer flex flex-col"
+            >
+              {/* Display first image or placeholder */}
+              <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500">
+                {project.images && project.images.length > 0 ? (
+                   <img
+                     src={project.images[0]}
+                     alt={project.title}
+                     className="w-full h-full object-cover"
+                     onError={(e) => { e.currentTarget.style.display = 'none'; /* Hide broken img */ }}
+                   />
+                ) : (
+                   <span>No Image</span>
+                )}
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 className="text-xl font-bold mb-2 text-white truncate">{project.title}</h3>
+                <p className="text-gray-400 line-clamp-3 mb-4 flex-grow">{project.description}</p>
+                {/* Display Tags */}
+                <div className="flex flex-wrap gap-2 mt-auto">
+                   {project.tags && project.tags.length > 0 ? (
+                     project.tags.slice(0, 3).map((tag) => ( // Show max 3 tags
+                       <span key={tag.tag_id} className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full">
+                         {tag.tag_name}
+                       </span>
+                     ))
+                   ) : null}
+                   {project.tags && project.tags.length > 3 && (
+                      <span className="text-xs text-gray-500">+{project.tags.length - 3} more</span>
+                   )}
                 </div>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
       </div>
     </div>

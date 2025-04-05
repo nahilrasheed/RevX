@@ -3,17 +3,16 @@ import apiClient from './client';
 export interface ProjectData {
   title: string;
   description: string;
-  category?: string;
-  image?: string;
+  tags?: string[]; // Add tags
+  images?: string[]; // Add images
 }
 
 export interface ProjectUpdateData {
   title?: string;
   description?: string;
-  category?: string;
-  image?: string;
+  tags?: string[]; // Add tags
+  images?: string[]; 
 }
-
 export interface ReviewData {
   review: string;
   rating: string;
@@ -61,5 +60,10 @@ export const removeContributor = async (projectId: string, contributorId: string
 
 export const getMyProjects = async () => {
   const response = await apiClient.get('/user/my_projects');
+  return response.data;
+};
+
+export const getTags = async () => {
+  const response = await apiClient.get('/project/tags');
   return response.data;
 };
