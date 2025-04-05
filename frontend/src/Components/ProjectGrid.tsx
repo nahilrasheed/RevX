@@ -109,7 +109,19 @@ const ProjectGrid = () => {
                 onClick={() => navigate(`/project/${project.id}`)}
                 className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer"
               >
-                <div className="aspect-video bg-gray-700"></div>
+                <div className="aspect-video bg-gray-700">
+                  {project.images && project.images.length > 0 ? (
+                    <img
+                      src={project.images[0]}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      No images
+                    </div>
+                  )}
+                </div>
                 <div className="p-6 ring-2 ring-gray-600 text-white bg-black">
                   <h3 className="text-xl font-bold mb-2">{project.title}</h3>
                   <p className="text-gray-400">{project.description}</p>

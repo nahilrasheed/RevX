@@ -10,7 +10,7 @@ interface Project {
   title: string;
   description: string;
   category?: string;
-  image_urls?: string[];
+  images?: string[];
   // Add other project properties as needed
 }
 
@@ -145,9 +145,9 @@ const Explore = () => {
                 className="bg-gray-1000 ring-1 ring-gray-600 rounded-lg overflow-hidden hover:ring-2 hover:ring-red-200 transition cursor-pointer"
               >
                 <div className="aspect-video bg-gray-700">
-                  {project.image_urls && project.image_urls.length > 0 ? (
+                  {project.images && project.images.length > 0 ? (
                     <img
-                      src={project.image_urls[0]} // Display the first image
+                      src={project.images[0]} // Display the first image
                       alt={project.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {

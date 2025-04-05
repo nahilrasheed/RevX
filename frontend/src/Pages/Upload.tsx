@@ -57,9 +57,9 @@ const Upload = () => {
                 title,
                 description,
                 category,
-                image_urls: uploadedUrls,
+                images: uploadedUrls,
             };
-
+            console.log('Project data:', projectData);
             const response = await createProject(projectData);
 
             if (response.ok) {
