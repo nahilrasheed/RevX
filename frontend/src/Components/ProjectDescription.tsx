@@ -7,7 +7,7 @@ import ContributorsList from './ContributorsList';
 import ReviewList from './ReviewList';
 import AddReviewForm from './AddReviewForm';
 import ProjectHeader from './ProjectHeader';
-import { Project } from '../types/project';
+import { Project, Tag } from '../types/project';
 import { UserPlus, X } from 'lucide-react';
 
 const ProjectDescription = () => {
@@ -85,7 +85,7 @@ const ProjectDescription = () => {
     );
   }
 
-  const isOwner = user && project.owner_id === user.id;
+  const isOwner = isAuthenticated && user?.id === project.owner_id;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -98,13 +98,11 @@ const ProjectDescription = () => {
               initialData={{
                 title: project.title,
                 description: project.description,
-                category: project.category,
-                image: project.images?.[0]
+                tags: project.tags,
               }}
               onCancel={() => setIsEditing(false)}
               onSuccess={() => {
                 refreshProjectData();
-                triggerRefresh();
                 setIsEditing(false);
               }}
             />
