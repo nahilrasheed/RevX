@@ -9,11 +9,13 @@ interface User {
   full_name: string;
   bio?: string;
   avatar?: string;
+  is_admin?: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: any) => Promise<void>;
@@ -112,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
+        isAdmin: !!user?.is_admin,
         isLoading,
         login,
         register,

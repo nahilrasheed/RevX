@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
+import AdminRoute from './Components/AdminRoute';
 import NavBar from './Components/NavBar';
 import Footer from './Components/Footer';
 
@@ -15,6 +16,11 @@ import About from './Pages/About';
 import Explore from './Pages/Explore';
 import Profile from './Pages/Profile';
 import ProjectDescription from './Components/ProjectDescription';
+
+// Admin page imports
+import AdminDashboard from './Pages/Admin/AdminDashboard';
+import UserManagement from './Pages/Admin/UserManagement';
+import ProjectManagement from './Pages/Admin/ProjectManagement';
 
 function App() {
   return (
@@ -49,6 +55,23 @@ function App() {
                 <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
+              } />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="/admin/users" element={
+                <AdminRoute>
+                  <UserManagement />
+                </AdminRoute>
+              } />
+              <Route path="/admin/projects" element={
+                <AdminRoute>
+                  <ProjectManagement />
+                </AdminRoute>
               } />
               
               {/* Redirect all other routes to home */}
