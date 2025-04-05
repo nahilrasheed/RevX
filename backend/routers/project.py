@@ -72,10 +72,8 @@ async def update_project(
         if project.title is not None:
             # Check if the new title already exists (but exclude this project)
             title_check = supabase.schema("revx").table("projects").select("id").eq("title", project.title).execute()
-            if title_check.data and title_check.data[0]["id"] != project_id:
+            if title_check.data and str(title_check.data[0]["id"]) != project_id:
                 raise HTTPException(status_code=400, detail="Project with this title already exists")
-            if title_check.data["id"] == project_id:
-                pass
             updates["title"] = project.title
             
         if project.description is not None:
@@ -105,24 +103,32 @@ async def update_project(
                     image_result = supabase.schema("revx").table("project_images").insert(image_data_list).execute()
                     if not image_result.data:
                         raise HTTPException(status_code=500, detail="Failed to update project images")
-                    
-            if project.tags is not None:
-                supabase.schema("revx").table("project_R_tag").delete().eq("project_id", project_id).execute()
-                
-                if project.tags:
-                    tag_data_list = []
-                    for tag in project.tags:
+
+        # Handle tag updates if provided
+        if project.tags is not None:
+            supabase.schema("revx").table("project_R_tag").delete().eq("project_id", project_id).execute()
+            
+            if project.tags:
+                tag_data_list = []
+                for tag in project.tags:
+                    try:
+                        # Convert tag to integer to ensure correct type
+                        tag_id = int(tag)
                         tag_data_list.append({
                             "project_id": project_id,
-                            "tag_id": tag,
+                            "tag_id": tag_id,
                         })
-                    
-                    if tag_data_list:
-                        tag_result = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
-                        if not tag_result.data:
-                            raise HTTPException(status_code=500, detail="Failed to update project tags")
+                    except (ValueError, TypeError):
+                        # Log or handle invalid tag IDs
+                        continue
+                
+                if tag_data_list:
+                    tag_result = supabase.schema("revx").table("project_R_tag").insert(tag_data_list).execute()
+                    if not tag_result.data:
+                        raise HTTPException(status_code=500, detail="Failed to update project tags")
 
-            project_data = await get_project_with_details(project_id)
+        # Get updated project data - moved outside conditionals to always return updated data
+        project_data = await get_project_with_details(project_id)
 
         return {
             "status": "success",
