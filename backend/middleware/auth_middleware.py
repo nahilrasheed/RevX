@@ -20,3 +20,24 @@ async def verify_token(
     
 async def get_current_user(user = Depends(verify_token)):
     return user
+
+async def get_admin_user(user = Depends(get_current_user)):
+    try:
+        user_id = str(user.user.id)
+        profile = supabase.schema("revx").table("profile").select("is_admin").eq("id", user_id).single().execute()
+        
+        if not profile.data or not profile.data.get("is_admin"):
+            raise HTTPException(
+                status_code=403,
+                detail="Admin access required",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return user
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error verifying admin status: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
