@@ -61,25 +61,23 @@ const Upload = () => {
             setError('Please fill title and description');
             return;
         }
-        if (images.length === 0) {
-            setError('Please upload at least one image');
-            return;
-        }
+        // Removed the image requirement check
 
         setIsLoading(true);
         setError(null);
         setUploadProgress(0); // Reset progress
 
         try {
-            // Upload all images to Supabase Storage
-            const uploadedUrls = await Promise.all(
-                images.map(async (file, index) => {
-                    const url = await uploadImageToStorage(file);
-                    // Update progress smoothly
-                    setUploadProgress((prev) => prev + (100 / images.length));
-                    return url;
-                })
-            );
+            // Upload all images to Supabase Storage if there are any
+            const uploadedUrls = images.length > 0 ? 
+                await Promise.all(
+                    images.map(async (file, index) => {
+                        const url = await uploadImageToStorage(file);
+                        // Update progress smoothly
+                        setUploadProgress((prev) => prev + (100 / images.length));
+                        return url;
+                    })
+                ) : [];
 
             // Validate that all selected tags exist in availableTags
             const validTagIds = selectedTagIds.filter(tagId => {
