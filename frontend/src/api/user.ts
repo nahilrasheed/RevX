@@ -19,3 +19,8 @@ export const changePassword = async (currentPassword: string, newPassword: strin
   });
   return response.data;
 };
+
+export const getMyReviews = async () => {
+  const response = await apiClient.get('/user/my_reviews');
+  return response.data;
+};
