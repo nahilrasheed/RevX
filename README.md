@@ -38,6 +38,9 @@ REV-X is a web-based platform that allows users to upload completed projects, re
     # Create a .env file in the 'backend' directory with your Supabase credentials:
     # SUPABASE_URL="YOUR_SUPABASE_URL"
     # SUPABASE_KEY="YOUR_SUPABASE_ANON_KEY"
+    # FRONTEND_URL=''
+    # RESET_PASSWORD_URL=''
+    # IMAGEKIT_PRIVATE_KEY=''
 
     uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ```
@@ -50,6 +53,8 @@ REV-X is a web-based platform that allows users to upload completed projects, re
 
     # Create a .env file in the 'frontend' directory:
     # VITE_API_URL="http://localhost:8000" # Or your backend URL if different
+    # VITE_IMAGEKIT_PUBLIC_KEY=
+    # VITE_IMAGEKIT_URL_ENDPOINT=
 
     npm run dev
     ````
