@@ -1,6 +1,6 @@
 fastapi==0.103.1
 uvicorn==0.22.0
-supabase==1.0.6
+supabase==2.14.0
 python-dotenv==1.0.0
 pydantic==2.10.6
 email-validator==2.0.0.post2
