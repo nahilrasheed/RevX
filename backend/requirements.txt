@@ -4,3 +4,4 @@ supabase==1.0.6
 python-dotenv==1.0.0
 pydantic==2.10.6
 email-validator==2.0.0.post2
+uuid==1.30
