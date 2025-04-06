@@ -72,7 +72,7 @@ const MyProjectsList = () => {
           onClick={() => navigate(`/project/${project.id}`)}
         >
           {/* Display first image or placeholder */}
-           <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500">
+           <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500 h-48 overflow-hidden">
              {project.images && project.images.length > 0 ? (
                 <img
                   src={project.images[0]}

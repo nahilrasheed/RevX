@@ -49,7 +49,7 @@ const Upload = () => {
                     const img = new Image();
                     img.src = URL.createObjectURL(file);
                     img.onload = () => {
-                        if (img.width >= 500 && img.height >= 500) {
+                        if (img.width > 500 && img.height > 500) {
                             validImages.push(file);
                         } else {
                             invalidImages.push(file.name);
