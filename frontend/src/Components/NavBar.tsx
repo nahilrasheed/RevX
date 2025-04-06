@@ -45,12 +45,12 @@ const NavBar = () => {
 
         {/* Navigation Links - Centered */}
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-6">
-          <Link to="/" className="hover:text-red-200 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Home">Home</Link>
-          <Link to="/explore" className="hover:text-red-200" aria-label="Explore">Explore</Link>
+          <Link to="/" className="hover:text-purple-300 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Home">Home</Link>
+          <Link to="/explore" className="hover:text-purple-300 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Explore">Explore</Link>
           {isAuthenticated && (
-            <Link to="/dashboard" className="hover:text-red-200" aria-label="Dashboard">Dashboard</Link>
+            <Link to="/dashboard" className="hover:text-purple-300 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Dashboard">Dashboard</Link>
           )}
-          <Link to="/about" className="hover:text-red-200" aria-label="About">About</Link>
+          <Link to="/about" className="hover:text-purple-300 transition-all duration-300 ease-in-out cursor-pointer" aria-label="About">About</Link>
         </div>
 
         {/* Upload Project Button */}
@@ -70,7 +70,7 @@ const NavBar = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 p-2 rounded-lg ring-1 ring-gray-600 bg-black hover:bg-gray-700"
+                className="flex items-center gap-2 p-2 rounded-lg ring-1 ring-purple-300 bg-black hover:bg-gray-700"
                 aria-label="Profile Menu"
               >
                 <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
@@ -109,7 +109,7 @@ const NavBar = () => {
               </Link>
               <Link
                 to="/register"
-                className="p-2 rounded-lg text-black bg-white hover:underline hover:ring-1 hover:ring-red-200"
+                className="p-2 rounded-lg text-black bg-white hover:underline hover:ring-1 hover:ring-purple-300"
                 aria-label="Register"
               >
                 Register

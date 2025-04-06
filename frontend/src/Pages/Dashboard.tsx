@@ -20,7 +20,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab('projects')}
               className={`px-4 py-2 rounded-lg ${
                 activeTab === 'projects' 
-                  ? 'ring-1 ring-red-200 text-white' 
+                  ? 'ring-1 ring-purple-300 text-white' 
                   : 'ring-1 ring-gray-500 text-gray-400 hover:bg-gray-800'
               }`}
             >
@@ -30,7 +30,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab('reviews')}
               className={`px-4 py-2 rounded-lg ${
                 activeTab === 'reviews' 
-                  ? 'ring-1 ring-red-200 text-white' 
+                  ? 'ring-1 ring-purple-300 text-white' 
                   : 'ring-1 ring-gray-500 text-gray-400 hover:bg-gray-800'
               }`}
             >
@@ -40,7 +40,7 @@ const Dashboard = () => {
           
           <button 
             onClick={() => navigate('/upload')} 
-            className="px-4 py-2 ring-1 ring-red-200 text-white rounded-lg hover:bg-gray-200 hover:text-black"
+            className="px-4 py-2 ring-1 ring-purple-300 text-white rounded-lg hover:bg-gray-200 hover:text-black"
           >
             Upload Project
           </button>

@@ -42,7 +42,7 @@ const ProjectDescription = () => {
   useEffect(() => {
     const fetchProject = async () => {
       if (!projectId) return;
-      
+      window.scrollTo(0, 0);
       try {
         setIsLoading(true);
         const response = await getProject(projectId);

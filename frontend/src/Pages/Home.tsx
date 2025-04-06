@@ -77,7 +77,7 @@ const HomePage = () => {
                 <div
                   key={project.id}
                   onClick={() => navigate(`/project/${project.id}`)}
-                  className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-red-200 transition-all cursor-pointer flex flex-col"
+                  className="bg-gray-800 rounded-lg ring-1 ring-gray-600 overflow-hidden hover:ring-2 hover:ring-purple-300 transition-all cursor-pointer flex flex-col"
                 >
                   <div className="aspect-video bg-gray-700 h-48 overflow-hidden">
                     {project.images && project.images.length > 0 ? (

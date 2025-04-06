@@ -155,7 +155,7 @@ const Explore = () => {
         {/* Search and Filter Controls */}
         <div className="max-w-4xl mx-auto mb-12 space-y-6">
           <div className="relative">
-            <div className="flex items-center ring-1 ring-gray-700 bg-gray-900 rounded-lg p-0.5 focus-within:ring-2 focus-within:ring-purple-500 transition duration-150 shadow-sm">
+            <div className="flex items-center ring-1 ring-gray-700 bg-gray-900 rounded-lg p-0.5 hover:ring-purple-300 focus-within:ring-2 focus-within:ring-purple-500 transition duration-150 shadow-sm">
               <div className="pl-3 pr-2 py-2 text-gray-500">
                 <Search className="h-5 w-5" />
               </div>
@@ -186,7 +186,7 @@ const Explore = () => {
                   const isSelected = selectedTagIds.includes(tagIdStr);
                   const tagButtonClass = isSelected
                     ? "bg-purple-600/80 text-white hover:bg-purple-500 ring-1 ring-purple-300"
-                    : "bg-gray-800 text-gray-300 hover:bg-gray-700 ring-1 ring-gray-600";
+                    : "bg-gray-800 text-gray-300 hover:bg-gray-700 ring-1 ring-gray-600 hover:ring-purple-300";
                   return (
                     <button
                       key={tag.id}
@@ -200,7 +200,7 @@ const Explore = () => {
                       }}
                       className={`
                         px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 
-                        transition-all duration-150 ease-in-out cursor-pointer
+                        transition-all duration-300 ease-in-out cursor-pointer
                         ${tagButtonClass}`}
                     >
                       {isSelected && <Check className="h-3 w-3" />}
@@ -214,7 +214,7 @@ const Explore = () => {
             {selectedTagIds.length > 0 && (
               <button
                 onClick={clearTagFilters}
-                className="text-purple-400 hover:text-purple-300 flex items-center text-xs sm:text-sm font-medium transition duration-150 ml-3 flex-shrink-0"
+                className="text-purple-400 hover:text-purple-300 flex items-center text-xs sm:text-sm font-medium transition duration-300 ml-3 flex-shrink-0"
               >
                 <X className="h-3.5 w-3.5 mr-1" /> Clear ({selectedTagIds.length})
               </button>
@@ -238,7 +238,7 @@ const Explore = () => {
               <div
                 key={project.id}
                 onClick={() => navigate(`/project/${project.id}`)}
-                className="bg-gray-950 rounded-lg ring-1 ring-gray-700 overflow-hidden hover:ring-2 hover:ring-red-400 transition-all cursor-pointer flex flex-col"
+                className="bg-gray-950 rounded-lg ring-1 ring-gray-700 overflow-hidden hover:ring-2 hover:ring-purple-300 transition-all cursor-pointer flex flex-col"
               >
                 <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500 h-48 overflow-hidden">
                   {Array.isArray(project.images) &&

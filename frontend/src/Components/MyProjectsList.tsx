@@ -68,7 +68,7 @@ const MyProjectsList = () => {
       {projects.map((project) => (
         <div
           key={project.id}
-          className="bg-gray-950 rounded-lg overflow-hidden ring-1 ring-gray-700 hover:ring-2 hover:ring-red-400 transition cursor-pointer flex flex-col"
+          className="bg-gray-950 rounded-lg overflow-hidden ring-1 ring-gray-700 hover:ring-2 hover:ring-purple-300 transition cursor-pointer flex flex-col"
           onClick={() => navigate(`/project/${project.id}`)}
         >
           {/* Display first image or placeholder */}

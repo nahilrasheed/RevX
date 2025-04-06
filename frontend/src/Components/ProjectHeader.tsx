@@ -40,7 +40,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
   return (
     <div className="flex flex-col lg:flex-row gap-12 mb-12">
       {/* Project Image Section */}
-      <div className="w-full lg:w-1/2 aspect-video bg-gray-800 rounded-lg overflow-hidden relative ring-1 ring-gray-600">
+      <div className="w-full lg:w-1/2 aspect-video bg-gray-800 rounded-lg overflow-hidden relative ring-1 ring-gray-600 hover:ring-purple-900 transition-all duration-300 cursor-pointer">
         {project.images && project.images.length > 0 ? (
           <>
             <img
@@ -174,7 +174,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
 
       {/* Modal for Image Zooming */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
           <div className="relative w-[70%] h-[70vh] p-4 rounded-lg flex flex-col">
             <button
               onClick={handleCloseModal}
