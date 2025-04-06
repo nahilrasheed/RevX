@@ -174,21 +174,6 @@ const ProjectDescription = () => {
                 />
               </div>
             )}
-
-            {/* Report Section */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-semibold mb-4">Report Bugs or Comments</h2>
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="Write a complaint..."
-                  className="flex-grow p-3 rounded-lg bg-gray-800 focus:outline-none"
-                />
-                <button className="px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-300">
-                  Submit
-                </button>
-              </div>
-            </div>
           </>
         )}
       </div>

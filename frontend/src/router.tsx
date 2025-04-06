@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -114,12 +114,10 @@ const LoginPage = () => {
           </p>
         </div>
 
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-          </div>
+        <div className="mb-6">
+          <label htmlFor="password" className="block mb-2 text-sm font-medium">
+            Password
+          </label>
           <input
             id="password"
             ref={passwordInputRef}
@@ -146,25 +144,31 @@ const LoginPage = () => {
           </p>
         </div>
 
+        <div className="flex justify-end mb-6">
+          <div className="text-sm">
+            <Link to="/forgot-password" className="text-gray-400 hover:underline hover:text-gray-200">
+              Forgot your password?
+            </Link>
+          </div>
+        </div>
+
         <button
           type="submit"
           disabled={isLoading || !!emailError || !!passwordError}
-          className={`w-full p-3 mt-6 rounded-lg flex justify-center items-center transition-all duration-200 ${
-            isLoading || emailError || passwordError 
-              ? 'bg-gray-500 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-purple-600 to-purple-500 text-white shadow-lg hover:shadow-purple-500/20 hover:from-purple-700 hover:to-purple-600'
-          }`}
+          className={`w-full p-3 ${
+            isLoading || emailError || passwordError ? 'bg-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-300'
+          } rounded-lg flex justify-center items-center`}
         >
           {isLoading ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-black"></div>
           ) : (
             'Sign in'
           )}
         </button>
         
-        <div className="mt-6 text-sm text-center border-t border-gray-700 pt-6">
+        <div className="mt-4 text-sm text-center">
           Don't have an account?{' '}
-          <Link to="/register" className="text-purple-400 hover:text-purple-300 hover:underline transition-colors">
+          <Link to="/register" className="text-gray-400 hover:underline hover:text-gray-200">
             Register now
           </Link>
         </div>
