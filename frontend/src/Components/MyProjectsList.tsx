@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyProjects } from '../api/projects';
+import { getMyProjects, deleteProject } from '../api/projects';
 import { Project, Tag } from '../types/project';
+import { Trash2 } from 'lucide-react';
 
 const MyProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -31,6 +33,24 @@ const MyProjectsList = () => {
 
     fetchMyProjects();
   }, []);
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) {
+      return;
+    }
+    
+    try {
+      setIsDeleting(projectId);
+      const response = await deleteProject(projectId);
+      if (response.status === 'success') {
+        setProjects(projects.filter(project => project.id !== projectId));
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Error deleting project');
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -68,30 +88,45 @@ const MyProjectsList = () => {
       {projects.map((project) => (
         <div
           key={project.id}
-          className="bg-gray-950 rounded-lg overflow-hidden ring-1 ring-gray-700 hover:ring-2 hover:ring-purple-300 transition cursor-pointer flex flex-col"
+          className="bg-gray-950 rounded-lg overflow-hidden ring-1 ring-gray-700 hover:ring-2 hover:ring-purple-300 transition cursor-pointer flex flex-col relative"
           onClick={() => navigate(`/project/${project.id}`)}
         >
-          {/* Display first image or placeholder */}
-           <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500 h-48 overflow-hidden">
-             {project.images && project.images.length > 0 ? (
-                <img
-                  src={project.images[0]}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
-             ) : (
-                <span>No Image</span>
-             )}
-           </div>
+          <div className="absolute top-2 right-2 z-10">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteProject(project.id);
+              }}
+              disabled={isDeleting === project.id}
+              className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-700"
+              title="Delete project"
+            >
+              {isDeleting === project.id ? (
+                <div className="animate-spin h-5 w-5 border-t-2 border-b-2 rounded-full border-white"></div>
+              ) : (
+                <Trash2 className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          <div className="aspect-video bg-gray-800 flex items-center justify-center text-gray-500 h-48 overflow-hidden">
+            {project.images && project.images.length > 0 ? (
+              <img
+                src={project.images[0]}
+                alt={project.title}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            ) : (
+              <span>No Image</span>
+            )}
+          </div>
           <div className="p-6 flex flex-col flex-grow">
             <h3 className="text-xl font-bold mb-2 text-white truncate">{project.title}</h3>
             <p className="text-gray-400 line-clamp-2 mb-4 flex-grow">{project.description}</p>
             <div className="mt-auto pt-4 border-t border-gray-700 flex items-center justify-between">
-              {/* Display Tags */}
               <div className="flex flex-wrap gap-1">
                 {project.tags && project.tags.length > 0 ? (
-                  project.tags.slice(0, 2).map((tag) => ( // Show max 2 tags
+                  project.tags.slice(0, 2).map((tag) => (
                     <span key={tag.id} className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full">
                       {tag.tag_name}
                     </span>
@@ -99,9 +134,9 @@ const MyProjectsList = () => {
                 ) : (
                   <span className="text-xs text-gray-500 italic">No tags</span>
                 )}
-                 {project.tags && project.tags.length > 2 && (
-                      <span className="text-xs text-gray-500">+{project.tags.length - 2}</span>
-                   )}
+                {project.tags && project.tags.length > 2 && (
+                  <span className="text-xs text-gray-500">+{project.tags.length - 2}</span>
+                )}
               </div>
               <span className="text-sm text-gray-500">
                 {new Date(project.created_at).toLocaleDateString()}

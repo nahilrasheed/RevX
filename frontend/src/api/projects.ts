@@ -67,3 +67,8 @@ export const getTags = async () => {
   const response = await apiClient.get('/project/tags');
   return response.data;
 };
+
+export const deleteProject = async (projectId: string) => {
+  const response = await apiClient.delete(`/project/delete/${projectId}`);
+  return response.data;
+};
