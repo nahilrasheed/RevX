@@ -37,17 +37,44 @@ const Upload = () => {
         fetchTags();
     }, []);
 
+    // Minimum image dimension check
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const selectedFiles = Array.from(e.target.files);
+            let validImages: File[] = [];
+            let invalidImages: string[] = [];
+    
+            const imagePromises = selectedFiles.map((file) => {
+                return new Promise<void>((resolve) => {
+                    const img = new Image();
+                    img.src = URL.createObjectURL(file);
+                    img.onload = () => {
+                        if (img.width >= 500 && img.height >= 500) {
+                            validImages.push(file);
+                        } else {
+                            invalidImages.push(file.name);
+                        }
+                        resolve();  
+                    };
+                });
+            });
+    
+            Promise.all(imagePromises).then(() => {
+                setImages(validImages); 
+    
+                if (invalidImages.length > 0) {
+                    setError(`Invalid image dimensions: ${invalidImages.join(', ')}`);
+                }
+            });
+        }
+    };
+    
     // Clear tag filters
     const clearTagFilters = () => {
         setSelectedTagIds([]);
     };
 
-    // Handle image selection
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setImages(Array.from(e.target.files)); // Convert FileList to array
-        }
-    };
+
 
     // Handle deleting a specific image
     const handleDelete = (index: number) => {

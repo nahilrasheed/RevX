@@ -39,7 +39,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
 
   return (
     <div className="flex flex-col lg:flex-row gap-12 mb-12">
-      {/* Image Carousel */}
+      {/* Project Image Section */}
       <div className="w-full lg:w-1/2 aspect-video bg-gray-800 rounded-lg overflow-hidden relative ring-1 ring-gray-600">
         {project.images && project.images.length > 0 ? (
           <>
@@ -175,8 +175,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
       {/* Modal for Image Zooming */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-3xl p-4 rounded-lg flex flex-col">
-            {/* Close Button */}
+          <div className="relative w-[70%] h-[70vh] p-4 rounded-lg flex flex-col">
             <button
               onClick={handleCloseModal}
               className="ml-auto text-white text-3xl font-semibold hover:text-gray-500"
@@ -184,13 +183,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
               &times;
             </button>
             <div className="relative">
-              {/* Image in Modal */}
               <img
                 src={project.images[currentImageIndex]}
                 alt={`Zoomed Image ${currentImageIndex + 1}`}
                 className="w-full h-auto"
               />
-              {/* Navigation Buttons */}
               {project.images.length > 1 && (
                 <>
                   <button
