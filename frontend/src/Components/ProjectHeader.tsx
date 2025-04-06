@@ -10,6 +10,7 @@ interface ProjectHeaderProps {
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditClick }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Calculate average rating
   const averageRating = project.reviews && project.reviews.length > 0
@@ -28,6 +29,13 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
     );
   };
 
+  const handleImageClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-12 mb-12">
@@ -38,8 +46,9 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
             <img
               src={project.images[currentImageIndex]}
               alt={`${project.title} - Image ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover"
-              onError={(e) => { e.currentTarget.src = '/fallback-image.jpg'; }} // Basic fallback
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={handleImageClick} 
+              onError={(e) => { e.currentTarget.src = '/fallback-image.jpg'; }}
             />
 
             {/* Navigation Buttons */}
@@ -124,29 +133,29 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
 
         {project.owner && (
           <div className="mb-4 flex items-center gap-2 ring-1 ring-gray-600 bg-gray-950 p-3 rounded-lg inline-block">
-          <div className="w-8 h-8 rounded-full bg-gray-1000 flex items-center justify-center">
-            {project.owner.avatar ? (
-              <img 
-                src={project.owner.avatar} 
-                alt="Owner avatar" 
-                className="w-full h-full rounded-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full">${project.owner?.full_name?.substring(0, 2) || project.owner?.username?.substring(0, 2) || 'U'}</div>`;
-                }}
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full">
-                {project.owner.full_name?.substring(0, 2) || project.owner.username?.substring(0, 2) || 'U'}
-              </div>
-            )}
+            <div className="w-8 h-8 rounded-full bg-gray-1000 flex items-center justify-center">
+              {project.owner.avatar ? (
+                <img 
+                  src={project.owner.avatar} 
+                  alt="Owner avatar" 
+                  className="w-full h-full rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.parentElement!.innerHTML = `<div class="flex items-center justify-center w-full h-full">${project.owner?.full_name?.substring(0, 2) || project.owner?.username?.substring(0, 2) || 'U'}</div>`;
+                  }}
+                />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full">
+                  {project.owner.full_name?.substring(0, 2) || project.owner.username?.substring(0, 2) || 'U'}
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-semibold">{project.owner.full_name || project.owner.username || 'Unknown Owner'}</p>
+              <p className="text-sm text-gray-400">
+                @{project.owner.username || `User ${project.owner_id.substring(0, 8)}`}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-semibold">{project.owner.full_name || project.owner.username || 'Unknown Owner'}</p>
-            <p className="text-sm text-gray-400">
-              @{project.owner.username || `User ${project.owner_id.substring(0, 8)}`}
-            </p>
-          </div>
-        </div>
         )}
 
         <p className="mb-8 text-gray-300 leading-relaxed">{project.description}</p>
@@ -160,9 +169,48 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
               Edit Project
             </button>
           )}
-          {/* Add other buttons like 'View Live Demo' or 'Source Code' if applicable */}
         </div>
       </div>
+
+      {/* Modal for Image Zooming */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="relative w-full max-w-3xl p-4 rounded-lg flex flex-col">
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              className="ml-auto text-white text-3xl font-semibold hover:text-gray-500"
+            >
+              &times;
+            </button>
+            <div className="relative">
+              {/* Image in Modal */}
+              <img
+                src={project.images[currentImageIndex]}
+                alt={`Zoomed Image ${currentImageIndex + 1}`}
+                className="w-full h-auto"
+              />
+              {/* Navigation Buttons */}
+              {project.images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/75 transition"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/75 transition"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

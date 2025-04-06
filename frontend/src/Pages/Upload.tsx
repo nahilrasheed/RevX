@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createProject, getTags } from '../api/projects';
@@ -274,10 +275,9 @@ const Upload = () => {
                                     <p className="truncate text-sm">{file.name}</p>
                                     <button
                                         type="button"
-                                        onClick={() => handleDelete(index)} // Call handleDelete with the index of the image
-                                        className="ring-1 ring-red-600 rounded-lg text-white p-1 m-1 hover:bg-red-700 text-xs"
-                                    >
-                                        Delete
+                                        onClick={() => handleDelete(index)} 
+                                        className='rounded-lg text-white p-1 m-1 hover:bg-red-700 text-xs'>
+                                        <Trash2 className="h-5 w-5" />
                                     </button>
                                 </div>
                             ))}

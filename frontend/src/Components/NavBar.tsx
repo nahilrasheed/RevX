@@ -36,7 +36,7 @@ const NavBar = () => {
     <nav className="bg-black text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold" aria-label="Home">
+        <Link to="/" className="text-2xl font-bold hover" aria-label="Home">
           <div className="flex items-center space-x-2">
             <Code2 className="h-8 w-8 text-white" />
             <span>REV-X</span>
@@ -45,12 +45,12 @@ const NavBar = () => {
 
         {/* Navigation Links - Centered */}
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-6">
-          <Link to="/" className="hover:text-white transition-all duration-300 ease-in-out cursor-pointer" aria-label="Home">Home</Link>
-          <Link to="/explore" className="hover:text-white" aria-label="Explore">Explore</Link>
+          <Link to="/" className="hover:text-red-200 transition-all duration-300 ease-in-out cursor-pointer" aria-label="Home">Home</Link>
+          <Link to="/explore" className="hover:text-red-200" aria-label="Explore">Explore</Link>
           {isAuthenticated && (
-            <Link to="/dashboard" className="hover:text-white" aria-label="Dashboard">Dashboard</Link>
+            <Link to="/dashboard" className="hover:text-red-200" aria-label="Dashboard">Dashboard</Link>
           )}
-          <Link to="/about" className="hover:text-white" aria-label="About">About</Link>
+          <Link to="/about" className="hover:text-red-200" aria-label="About">About</Link>
         </div>
 
         {/* Upload Project Button */}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyProjects } from '../api/projects';
-import { Project, Tag } from '../types/project'; // Import Project and Tag
+import { Project, Tag } from '../types/project';
 
 const MyProjectsList = () => {
   const [projects, setProjects] = useState<Project[]>([]);

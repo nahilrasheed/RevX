@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -347,8 +348,8 @@ const Register = () => {
                   <button 
                     type="button"
                     onClick={handleDelete}
-                    className='ring-1 ring-red-600 hover:bg-red-700 rounded-lg px-3 py-1 text-xs transition-colors duration-200'>
-                    Remove
+                    className='rounded-lg text-white p-1 m-1 hover:bg-red-700 text-xs'>
+                    <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
               )}
