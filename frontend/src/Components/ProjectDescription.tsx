@@ -7,7 +7,7 @@ import ContributorsList from './ContributorsList';
 import ReviewList from './ReviewList';
 import AddReviewForm from './AddReviewForm';
 import ProjectHeader from './ProjectHeader';
-import { Project, Tag } from '../types/project';
+import { Project } from '../types/project';
 import { UserPlus, X } from 'lucide-react';
 
 const ProjectDescription = () => {
@@ -30,7 +30,7 @@ const ProjectDescription = () => {
       if (updatedProject.status === 'success') {
         setProject(updatedProject.data);
       }
-    } catch (err) {
+    } catch {
       setError('Error refreshing project data');
     }
   }, [projectId]);
@@ -52,8 +52,8 @@ const ProjectDescription = () => {
         } else {
           setError('Failed to load project');
         }
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Error loading project');
+      } catch (err: unknown) {
+        setError((err as Error)?.message || 'Error loading project');
       } finally {
         setIsLoading(false);
       }
@@ -99,6 +99,7 @@ const ProjectDescription = () => {
                 title: project.title,
                 description: project.description,
                 tags: project.tags,
+                images: project.images, 
               }}
               onCancel={() => setIsEditing(false)}
               onSuccess={() => {

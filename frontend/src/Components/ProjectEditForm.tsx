@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { updateProject, getTags } from '../api/projects';
 import { Tag } from '../types/project';
-import { Tag as TagIcon, Check, X } from 'lucide-react';
+import { Tag as TagIcon, Check, X, Images, Trash2 } from 'lucide-react';
+import { uploadImageToStorage } from '../utils/imageUpload';
 
 interface ProjectEditFormData {
   title: string;
   description: string;
   tags?: Tag[];
-  image?: string;
+  images?: string[]; // Updated to support multiple images
 }
 
 interface ProjectEditFormProps {
@@ -16,6 +17,9 @@ interface ProjectEditFormProps {
   onCancel: () => void;
   onSuccess: () => void;
 }
+
+// Add constant for maximum images
+const MAX_IMAGES = 10;
 
 const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
   projectId,
@@ -31,6 +35,12 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Image-related state
+  const [currentImages] = useState<string[]>(initialData.images || []);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   // Fetch available tags when component mounts
   useEffect(() => {
@@ -55,12 +65,89 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
     setSelectedTagIds([]);
   };
 
+  // Handle new image selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      const totalImages = currentImages.length - imagesToRemove.length + newImages.length + selectedFiles.length;
+      
+      // Check if adding these files would exceed the limit
+      if (totalImages > MAX_IMAGES) {
+        setError(`You can only have a maximum of ${MAX_IMAGES} images per project. Current total would be ${totalImages}.`);
+        return;
+      }
+      
+      const validNewImages: File[] = [];
+      const invalidImages: string[] = [];
+
+      const imagePromises = selectedFiles.map((file) => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          img.onload = () => {
+            if (img.width >= 240 && img.height >= 240) {
+              validNewImages.push(file);
+            } else {
+              invalidImages.push(file.name);
+            }
+            resolve();  
+          };
+        });
+      });
+
+      Promise.all(imagePromises).then(() => {
+        // Add new valid images to existing new images
+        setNewImages(prevImages => [...prevImages, ...validNewImages]); 
+
+        if (invalidImages.length > 0) {
+          setError(`Invalid image dimensions (min 240x240px): ${invalidImages.join(', ')}`);
+        }
+      });
+    }
+    
+    // Reset the input value so the same file can be selected again if needed
+    e.target.value = '';
+  };
+
+  // Handle removing existing images
+  const handleRemoveExistingImage = (imageUrl: string) => {
+    setImagesToRemove(prev => [...prev, imageUrl]);
+  };
+
+  // Handle removing new images
+  const handleRemoveNewImage = (index: number) => {
+    setNewImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
+  // Handle restoring removed existing images
+  const handleRestoreImage = (imageUrl: string) => {
+    setImagesToRemove(prev => prev.filter(url => url !== imageUrl));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setUploadProgress(0);
 
     try {
+      // Upload new images if any
+      let uploadedImageUrls: string[] = [];
+      if (newImages.length > 0) {
+        uploadedImageUrls = await Promise.all(
+          newImages.map(async (file) => {
+            const url = await uploadImageToStorage(file);
+            // Update progress smoothly
+            setUploadProgress((prev) => prev + (100 / newImages.length));
+            return url;
+          })
+        );
+      }
+
+      // Calculate final images list
+      const remainingCurrentImages = currentImages.filter(url => !imagesToRemove.includes(url));
+      const finalImages = [...remainingCurrentImages, ...uploadedImageUrls];
+
       // Validate that all selected tags exist in availableTags
       const validTagIds = selectedTagIds.filter(tagId => {
         return availableTags.some(tag => 
@@ -71,11 +158,13 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
       // Log validation information
       console.log("Selected tag IDs:", selectedTagIds);
       console.log("Valid tag IDs:", validTagIds);
+      console.log("Final images:", finalImages);
       
       const updatedData = {
         title,
         description,
-        tags: validTagIds, // Send only validated tag IDs
+        tags: validTagIds,
+        images: finalImages, // Include updated images
       };
 
       console.log("Sending update data:", updatedData);
@@ -91,6 +180,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
       setError((err as Error)?.message || 'An error occurred while updating the project');
     } finally {
       setIsLoading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -188,6 +278,110 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
             </button>
           )}
         </div>
+      </div>
+
+      {/* Image Management UI */}
+      <div className="mb-4">
+        
+        {/* Current Images */}
+        {currentImages.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-2 text-gray-300">Current Images:</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {currentImages.map((imageUrl, index) => {
+                const isMarkedForRemoval = imagesToRemove.includes(imageUrl);
+                return (
+                  <div key={index} className={`relative group ${isMarkedForRemoval ? 'opacity-75' : ''}`}>
+                    <div className="h-36 overflow-hidden rounded-lg bg-gray-800">
+                      <img 
+                        src={imageUrl} 
+                        alt={`Project image ${index + 1}`}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    </div>
+                    
+                    {/* Action buttons - always on top with higher z-index */}
+                    <div className={`absolute top-2 right-2 z-20 ${isMarkedForRemoval ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                      {isMarkedForRemoval ? (
+                        <button
+                          type="button"
+                          onClick={() => handleRestoreImage(imageUrl)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium shadow-lg"
+                        >
+                          Restore
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveExistingImage(imageUrl)}
+                          className="bg-red-600 hover:bg-red-700 text-white p-1 rounded shadow-lg"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                    
+                    {/* Removal overlay - lower z-index */}
+                    {isMarkedForRemoval && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 rounded-lg z-10">
+                        <span className="text-red-300 text-xs font-medium bg-red-900 bg-opacity-80 px-2 py-1 rounded">Will be removed</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* New Images */}
+        {newImages.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-2 text-gray-300">New Images:</h4>
+            <div className="space-y-2 border border-gray-700 p-3 rounded-lg">
+              {newImages.map((file, index) => (
+                <div key={index} className="flex items-center justify-between bg-gray-800 p-2 rounded">
+                  <p className="truncate text-sm">{file.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveNewImage(index)} 
+                    className='rounded-lg text-white p-1 m-1 hover:bg-red-700 text-xs'>
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Add Images Button */}
+        <input
+          id="image-edit"
+          type="file"
+          onChange={handleImageChange}
+          className="hidden"
+          accept=".jpeg, .jpg, .png, .gif, .webp"
+          multiple
+        />
+        <button
+          type="button"
+          onClick={() => document.getElementById('image-edit')?.click()}
+          className="w-full p-3 rounded-lg bg-gray-800 text-white font-medium hover:bg-gray-600 flex items-center justify-center gap-2"
+        >
+          <Images className="h-5 w-5" /> 
+          {newImages.length === 0 && currentImages.length === 0 ? 'Add Images' : 'Add More Images'} 
+          ({currentImages.length - imagesToRemove.length + newImages.length}/{MAX_IMAGES})
+        </button>
+
+        {/* Upload Progress */}
+        {isLoading && uploadProgress > 0 && (
+          <div className="w-full bg-gray-700 rounded-full h-2.5 mt-3">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end gap-4 mt-6">

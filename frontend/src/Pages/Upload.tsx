@@ -7,6 +7,8 @@ import { Images, Tag as TagIcon, Check, X } from 'lucide-react';
 import { uploadImageToStorage } from '../utils/imageUpload';
 import { Tag } from '../types/project';
 
+const MAX_IMAGES = 10;
+
 const Upload = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
@@ -41,7 +43,14 @@ const Upload = () => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
-            let validImages: File[] = [];
+            
+            // Check if adding these files would exceed the limit
+            if (images.length + selectedFiles.length > MAX_IMAGES) {
+                setError(`You can only upload a maximum of ${MAX_IMAGES} images per project. You currently have ${images.length} images and are trying to add ${selectedFiles.length} more.`);
+                return;
+            }
+            
+            let validNewImages: File[] = [];
             let invalidImages: string[] = [];
     
             const imagePromises = selectedFiles.map((file) => {
@@ -49,8 +58,8 @@ const Upload = () => {
                     const img = new Image();
                     img.src = URL.createObjectURL(file);
                     img.onload = () => {
-                        if (img.width > 500 && img.height > 500) {
-                            validImages.push(file);
+                        if (img.width >= 240 && img.height >= 240) {
+                            validNewImages.push(file);
                         } else {
                             invalidImages.push(file.name);
                         }
@@ -60,13 +69,17 @@ const Upload = () => {
             });
     
             Promise.all(imagePromises).then(() => {
-                setImages(validImages); 
+                // Add new valid images to existing images
+                setImages(prevImages => [...prevImages, ...validNewImages]); 
     
                 if (invalidImages.length > 0) {
                     setError(`Invalid image dimensions: ${invalidImages.join(', ')}`);
                 }
             });
         }
+        
+        // Reset the input value so the same file can be selected again if needed
+        e.target.value = '';
     };
     
     // Clear tag filters
@@ -268,14 +281,14 @@ const Upload = () => {
 
                 <div className="mb-6">
                     <label htmlFor="image" className="block mb-2 text-sm font-medium">
-                        Upload Images (JPEG/JPG)
+                        Upload Images - Min 240x240px
                     </label>
                     <input
                         id="image"
                         type="file"
                         onChange={handleImageChange}
                         className="hidden"
-                        accept=".jpeg, .jpg"
+                        accept=".jpeg, .jpg, .png, .gif, .webp"
                         multiple // Allow multiple files
                     />
                     <button
@@ -283,7 +296,7 @@ const Upload = () => {
                         onClick={() => document.getElementById('image')?.click()}
                         className="w-full p-3 rounded-lg bg-gray-800 text-white font-medium hover:bg-gray-600 flex items-center justify-center gap-2"
                     >
-                       <Images className="h-5 w-5" /> Upload Images
+                       <Images className="h-5 w-5" /> {images.length === 0 ? 'Upload Images' : 'Add More Images'} ({images.length}/{MAX_IMAGES})
                     </button>
 
                     {images.length > 0 && (
