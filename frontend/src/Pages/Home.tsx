@@ -112,7 +112,7 @@ const HomePage = () => {
                       {Array.isArray(project.tags) && project.tags.length > 0 ? (
                         project.tags.slice(0, 3).map((tag) => (
                           <span
-                            key={tag.id ?? tag.tag_id}
+                            key={tag.tag_id}
                             className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full"
                           >
                             {tag.tag_name}

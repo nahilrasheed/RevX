@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyProjects, deleteProject } from '../api/projects';
-import { Project, Tag } from '../types/project';
+import { Project } from '../types/project';
 import { Trash2 } from 'lucide-react';
 
 const MyProjectsList = () => {
@@ -127,7 +127,7 @@ const MyProjectsList = () => {
               <div className="flex flex-wrap gap-1">
                 {project.tags && project.tags.length > 0 ? (
                   project.tags.slice(0, 2).map((tag) => (
-                    <span key={tag.id} className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full">
+                    <span key={tag.tag_id} className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full">
                       {tag.tag_name}
                     </span>
                   ))

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X, Check, Tag, Star } from "lucide-react";
 import { getProjects, getTags } from "../api/projects";
@@ -48,11 +48,11 @@ const Explore = () => {
           Array.isArray(tagResponse.data)
         ) {
           const validTags = tagResponse.data.filter(
-            (tag) => typeof tag.id !== "undefined"
+            (tag: TagType) => typeof tag.tag_id !== "undefined"
           );
           if (validTags.length !== tagResponse.data.length) {
             console.warn(
-              "Some tags received from API were missing the 'id' property and were filtered out."
+              "Some tags received from API were missing the 'tag_id' property and were filtered out."
             );
           }
           setAvailableTags(validTags);
@@ -178,20 +178,20 @@ const Explore = () => {
               </div>
             ) : (
               <div className="flex flex-wrap gap-2 py-2 max-h-36 overflow-y-auto flex-grow pl-0.5">
-                {availableTags.map((tag, index) => {
-                  if (!tag || typeof tag.id === "undefined") {
+                {availableTags.map((tag) => {
+                  if (!tag || typeof tag.tag_id === "undefined") {
                     return null;
                   }
-                  const tagIdStr = String(tag.id);
+                  const tagIdStr = String(tag.tag_id);
                   const isSelected = selectedTagIds.includes(tagIdStr);
                   const tagButtonClass = isSelected
                     ? "bg-purple-600/80 text-white hover:bg-purple-500 ring-1 ring-purple-300"
                     : "bg-gray-800 text-gray-300 hover:bg-gray-700 ring-1 ring-gray-600 hover:ring-purple-300";
                   return (
                     <button
-                      key={tag.id}
+                      key={tag.tag_id}
                       onClick={() => {
-                        const currentTagId = String(tag.id);
+                        const currentTagId = String(tag.tag_id);
                         setSelectedTagIds((prevSelected) => {
                           return prevSelected.includes(currentTagId)
                             ? prevSelected.filter(id => id !== currentTagId)
@@ -276,7 +276,7 @@ const Explore = () => {
                     {Array.isArray(project.tags) && project.tags.length > 0 ? (
                       project.tags.slice(0, 3).map((tag) => (
                         <span
-                          key={tag.id ?? tag.tag_id}
+                          key={tag.tag_id}
                           className="inline-block px-2 py-0.5 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full"
                         >
                           {tag.tag_name}

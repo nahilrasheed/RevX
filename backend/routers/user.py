@@ -36,7 +36,7 @@ async def my_projects(user = Depends(get_current_user)):
     try:
         user_id = str(user.user.id)
         
-        result = supabase.rpc('get_projects_with_images', {"user_id": user_id}).execute()
+        result = supabase.rpc('get_user_projects_with_images', {"user_id": user_id}).execute()
         
         projects_list = [json.loads(p) if isinstance(p, str) else p for p in result.data] if result.data else []
         

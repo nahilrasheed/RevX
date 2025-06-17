@@ -110,7 +110,7 @@ const Upload = () => {
             // Validate that all selected tags exist in availableTags
             const validTagIds = selectedTagIds.filter(tagId => {
                 return availableTags.some(tag => 
-                    tag && tag.tag_id !== undefined && tag.tag_id.toString() === tagId
+                    tag && tag.tag_id.toString() === tagId
                 );
             });
             
@@ -223,15 +223,7 @@ const Upload = () => {
                                         return null;
                                     }
                                     
-                                    // Use either tag_id or id, preferring tag_id
-                                    const tagId = tag.tag_id !== undefined ? tag.tag_id : tag.id;
-                                    
-                                    if (tagId === undefined) {
-                                        console.warn("Tag with missing ID:", tag);
-                                        return null;
-                                    }
-                                    
-                                    const tagIdStr = String(tagId);
+                                    const tagIdStr = String(tag.tag_id);
                                     const isSelected = selectedTagIds.includes(tagIdStr);
                                     const tagButtonClass = isSelected
                                         ? "bg-purple-600/80 text-white hover:bg-purple-500 ring-1 ring-purple-300"

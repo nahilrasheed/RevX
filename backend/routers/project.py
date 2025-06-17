@@ -322,9 +322,18 @@ async def get_tags():
                 "data": []
             }
         
+        # Transform to use tag_id for consistency with other endpoints
+        transformed_tags = [
+            {
+                "tag_id": tag["id"],
+                "tag_name": tag["tag_name"]
+            }
+            for tag in tags_result.data
+        ]
+        
         return {
             "status": "success",
-            "data": tags_result.data
+            "data": transformed_tags
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error fetching tags: {str(e)}")

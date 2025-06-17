@@ -26,7 +26,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    initialData.tags?.map(tag => tag.tag_id ? tag.tag_id.toString() : '') || []
+    initialData.tags?.map(tag => tag.tag_id.toString()) || []
   );
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +64,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
       // Validate that all selected tags exist in availableTags
       const validTagIds = selectedTagIds.filter(tagId => {
         return availableTags.some(tag => 
-          tag && tag.tag_id !== undefined && tag.tag_id.toString() === tagId
+          tag && tag.tag_id.toString() === tagId
         );
       });
       
@@ -86,9 +86,9 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
       } else {
         setError(response.message || 'Failed to update project');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Update project error:", err);
-      setError(err.message || 'An error occurred while updating the project');
+      setError((err as Error)?.message || 'An error occurred while updating the project');
     } finally {
       setIsLoading(false);
     }
@@ -147,15 +147,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
                   return null;
                 }
                 
-                // Use either tag_id or id, preferring tag_id
-                const tagId = tag.tag_id !== undefined ? tag.tag_id : tag.id;
-                
-                if (tagId === undefined) {
-                  console.warn("Tag with missing ID:", tag);
-                  return null;
-                }
-                
-                const tagIdStr = String(tagId);
+                const tagIdStr = String(tag.tag_id);
                 const isSelected = selectedTagIds.includes(tagIdStr);
                 const tagButtonClass = isSelected
                   ? "bg-purple-600/80 text-white hover:bg-purple-500 ring-1 ring-purple-300"

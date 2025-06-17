@@ -35,8 +35,7 @@ export interface ProjectImage {
 }
 
 export interface Tag {
-  id: number; 
-  tag_id?: number; // Assuming tag_id is a number
+  tag_id: number; 
   tag_name: string;
 }
 

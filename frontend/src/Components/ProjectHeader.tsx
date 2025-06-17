@@ -98,17 +98,14 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, isOwner, onEditC
           {/* Display Tags */}
           <div className="flex flex-wrap gap-2">
             {project.tags && project.tags.length > 0 ? (
-              project.tags.map((tag) => {
-                const tagKey = tag.tag_id !== undefined ? tag.tag_id : tag.id;
-                return (
-                  <span 
-                    key={tagKey} 
-                    className="inline-block px-3 py-1 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full"
-                  >
-                    {tag.tag_name}
-                  </span>
-                );
-              })
+              project.tags.map((tag) => (
+                <span 
+                  key={tag.tag_id} 
+                  className="inline-block px-3 py-1 text-xs font-medium ring-1 ring-purple-400 bg-purple-900/30 text-purple-300 rounded-full"
+                >
+                  {tag.tag_name}
+                </span>
+              ))
             ) : (
               <span className="text-sm text-gray-500 italic">No tags</span>
             )}
